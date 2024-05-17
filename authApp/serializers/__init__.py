@@ -1,0 +1,2 @@
+from authApp.serializers.roleSerializer import RoleSerializer
+from authApp.serializers.permissionSerializer import PermissionSerializer

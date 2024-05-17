@@ -42,6 +42,18 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
+    # Role API
+    path('show-roles/', appView.show_roles),
+    path('create-role/', appView.create_role),
+    path('update-role/<int:pk>/', appView.update_role),
+    path('delete-role/<int:pk>/', appView.delete_role),
+
+    # Permission API
+    path('show-permissions/', appView.show_permissions),
+    path('create-permissions/', appView.create_permission),
+    path('update-permission/<int:pk>/', appView.update_permission),
+    path('delete-permission/<int:pk>/', appView.delete_permission),
+
     # token
     path('generate_token/', views.obtain_auth_token),
 
