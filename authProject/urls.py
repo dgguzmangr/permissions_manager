@@ -55,9 +55,13 @@ urlpatterns = [
     path('delete-permission/<int:pk>/', appView.delete_permission),
 
     # Rol and permissions API
-    path('user-rol-list/', appView.user_role_list),
-    path('role-permission-list/', appView.role_permission_list),
-    path('check-permission/', appView.check_permission),
+    path('user-rol-list/', appView.user_role_list),                 # assign roles to users
+    path('role-permission-list/', appView.role_permission_list),    # assign permissions to roles
+    path('check-permission/', appView.check_permission),            # check permissions
+
+# Business Model url
+    path('field-structure-view/', businessModelView.field_structure_view),
+
 
     # token
     path('generate_token/', views.obtain_auth_token),
