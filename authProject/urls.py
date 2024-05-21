@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView) # comentar par deshabilitar seguridad
 from rest_framework.authtoken import views
+from authApp.views.userRestController import UserController
 from authApp.views import appView
 from authApp.views import businessModelView
 from rest_framework import permissions
@@ -42,6 +43,13 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
+    # User API
+        path('show-users/', UserController.show_users, name='List all created users'),
+    path('create-user/', UserController.create_user, name='Create a new user'),
+    path('update-user/<int:pk>/', UserController.update_user, name='Update a selected user'),
+    path('delete-user/<int:pk>/', UserController.delete_user, name='Delete a selected user'),
+
+
     # Role API
     path('show-roles/', appView.show_roles),
     path('create-role/', appView.create_role),
@@ -49,10 +57,10 @@ urlpatterns = [
     path('delete-role/<int:pk>/', appView.delete_role),
 
     # Permission API
-    path('show-permissions/', appView.show_permissions),
-    path('create-permissions/', appView.create_permission),
-    path('update-permission/<int:pk>/', appView.update_permission),
-    path('delete-permission/<int:pk>/', appView.delete_permission),
+    path('show-permissions/', appView.show_permissions, name='List all created permits'),
+    path('create-permissions/', appView.create_permission, name='Create a new permit'),
+    path('update-permission/<int:pk>/', appView.update_permission, name='Update a selected permit'),
+    path('delete-permission/<int:pk>/', appView.delete_permission, name='Delete a selected permit'),
 
     # Rol and permissions API
     path('user-rol-list/', appView.user_role_list),                 # assign roles to users
