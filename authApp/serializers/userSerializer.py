@@ -4,7 +4,7 @@ from authApp.models.user import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        model = [
+        fields = [
             'user_id',
             'type',
             'company_name',
@@ -13,12 +13,15 @@ class UserSerializer(serializers.ModelSerializer):
             'document',
             'nit',
             'email',
+            'username',
             'password',
-            'status'
+            'status',
+            'role'
         ]
 
         read_only_fields = [
             'user_id',
+            'username'
         ]
 
         def validate(self, data):

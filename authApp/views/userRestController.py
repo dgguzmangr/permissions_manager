@@ -1,4 +1,6 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
@@ -77,6 +79,22 @@ class UserController:
             return standard_response(False, "User not found", status_code=status.HTTP_404_NOT_FOUND)
 
         user.delete()
-        return standard_response(True, "User deleted successfully", status_code=status.HTTP_204_NO_CONTENT)
+        return standard_response(True, "User deleted successfully", data=None, status_code=status.HTTP_204_NO_CONTENT)
+
+
+    @api_view(['POST'])
+    def login(request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not email or not password:
+            return standard_response(False, "Email and password are required", status_code=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            return standard_response(True, "Login successful", {'token': token.key})
+        else:
+            return standard_response(False, "Invalid credentials", status_code=status.HTTP_401_UNAUTHORIZED)
 
 

@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'djmoney',
 ]
 
+AUTH_USER_MODEL = 'authApp.User'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

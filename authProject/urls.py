@@ -44,10 +44,12 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # User API
-        path('show-users/', UserController.show_users, name='List all created users'),
+    path('show-users/', UserController.show_users, name='List all created users'),
     path('create-user/', UserController.create_user, name='Create a new user'),
     path('update-user/<int:pk>/', UserController.update_user, name='Update a selected user'),
     path('delete-user/<int:pk>/', UserController.delete_user, name='Delete a selected user'),
+    #login
+    path('login/', UserController.login),
 
 
     # Role API
@@ -73,9 +75,6 @@ urlpatterns = [
 
     # token
     path('generate_token/', views.obtain_auth_token),
-
-    #login
-    path('login/', appView.login),
 ]
 
 # http://localhost:8000/swagger/

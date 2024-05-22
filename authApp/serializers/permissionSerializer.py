@@ -7,7 +7,7 @@ class PermissionSerializer(serializers.ModelSerializer):
         fields = [
             'permission_id',
             'name',
-            'description',
+            'description'
         ]
 
         read_only_fields = [

@@ -7,7 +7,8 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = [
             'role_id',
             'name',
-            'description'
+            'description',
+            'permission'
         ]
 
         read_only_fields = [

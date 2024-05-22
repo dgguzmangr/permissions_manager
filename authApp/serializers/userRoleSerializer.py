@@ -6,9 +6,7 @@ class UserRoleSerializer(serializers.ModelSerializer):
         model = UserRole
         fields = [
             'userRole_id',
-            'assigned_at',
-            'user',
-            'rol',
+            'assigned_at'
         ]
 
         read_only_fields = [
