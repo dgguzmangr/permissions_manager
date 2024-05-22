@@ -83,6 +83,8 @@ class UserController:
 
 
     @api_view(['POST'])
+    @permission_classes([])
+    @authentication_classes([])
     def login(request):
         email = request.data.get('email')
         password = request.data.get('password')
