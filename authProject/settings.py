@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'djmoney',
+    'phonenumber_field'
 ]
 
 AUTH_USER_MODEL = 'authApp.User'

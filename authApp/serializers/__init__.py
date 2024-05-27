@@ -1,3 +1,5 @@
 from authApp.serializers.userSerializer import UserSerializer
 from authApp.serializers.roleSerializer import RoleSerializer
 from authApp.serializers.permissionSerializer import PermissionSerializer
+from authApp.serializers.backupEmailSerializer import BackupEmailSerializer
+from authApp.serializers.phoneSerializer import PhoneSerializer

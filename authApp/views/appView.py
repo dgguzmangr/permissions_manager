@@ -7,10 +7,14 @@ from drf_yasg import openapi
 from authApp.models.user import User
 from authApp.models.role import Role
 from authApp.models.permission import Permission
+from authApp.models.backupEmail import BackupEmail
+from authApp.models.phone import Phone
 
 from authApp.serializers.userSerializer import UserSerializer
 from authApp.serializers.roleSerializer import RoleSerializer
 from authApp.serializers.permissionSerializer import PermissionSerializer
+from authApp.serializers.backupEmailSerializer import BackupEmailSerializer
+from authApp.serializers.phoneSerializer import PhoneSerializer
 
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
@@ -197,6 +201,128 @@ def delete_permission(request, pk):
         return Response({"error": "Permission not found"}, status=status.HTTP_404_NOT_FOUND)
     if request.method == 'DELETE':
         permission.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# BackupEmail API
+
+@swagger_auto_schema(method='get', responses={200: BackupEmailSerializer(many=True)} , tags=['BackupEmail'])
+@api_view(['GET'])
+def show_backupEmail(request):
+    if request.method == 'GET':
+        backupEmail = BackupEmail.objects.all()
+        serializer = BackupEmailSerializer(backupEmail, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(method='post', request_body=BackupEmailSerializer, responses={201: BackupEmailSerializer}, tags=['BackupEmail'])
+@api_view(['POST'])
+def create_backupEmail(request):
+    if request.method == 'POST':
+        serializer = BackupEmailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='put', request_body=BackupEmailSerializer, responses={200: BackupEmailSerializer}, tags=['BackupEmail'])
+@api_view(['PUT'])
+def update_backupEmail(request, pk):
+    try:
+        backupEmail = BackupEmail.objects.get(pk=pk)
+    except backupEmail.DoesNotExist:
+        return Response({"error": "Backup email not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = BackupEmailSerializer(BackupEmail, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='patch', request_body=BackupEmailSerializer, responses={200: BackupEmailSerializer}, tags=['BackupEmail'])
+@api_view(['PATCH'])
+def partial_update_backupEmail(request, pk):
+    try:
+        backupEmail = BackupEmail.objects.get(pk=pk)
+    except BackupEmail.DoesNotExist:
+        return Response({"error": "Backup email not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        serializer = BackupEmailSerializer(backupEmail, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['BackupEmail'])
+@api_view(['DELETE'])
+def delete_backupEmail(request, pk):
+    try:
+        backupEmail = BackupEmail.objects.get(pk=pk)
+    except BackupEmail.DoesNotExist:
+        return Response({"error": "Backup email not found"}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'DELETE':
+        backupEmail.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Phone API
+
+@swagger_auto_schema(method='get', responses={200: PhoneSerializer(many=True)} , tags=['Phone'])
+@api_view(['GET'])
+def show_phone(request):
+    if request.method == 'GET':
+        phone = Phone.objects.all()
+        serializer = PhoneSerializer(Phone, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(method='post', request_body=PhoneSerializer, responses={201: PhoneSerializer}, tags=['Phone'])
+@api_view(['POST'])
+def create_phone(request):
+    if request.method == 'POST':
+        serializer = PhoneSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='put', request_body=PhoneSerializer, responses={200: PhoneSerializer}, tags=['Phone'])
+@api_view(['PUT'])
+def update_phone(request, pk):
+    try:
+        phone = Phone.objects.get(pk=pk)
+    except phone.DoesNotExist:
+        return Response({"error": "Phone not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = PhoneSerializer(Phone, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='patch', request_body=PhoneSerializer, responses={200: PhoneSerializer}, tags=['Phone'])
+@api_view(['PATCH'])
+def partial_update_phone(request, pk):
+    try:
+        phone = Phone.objects.get(pk=pk)
+    except Phone.DoesNotExist:
+        return Response({"error": "Phone not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        serializer = PhoneSerializer(phone, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['Phone'])
+@api_view(['DELETE'])
+def delete_phone(request, pk):
+    try:
+        phone = Phone.objects.get(pk=pk)
+    except Phone.DoesNotExist:
+        return Response({"error": "Phone not found"}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'DELETE':
+        phone.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Login API

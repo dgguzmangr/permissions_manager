@@ -71,8 +71,22 @@ urlpatterns = [
     path('partial-update-permission/<int:pk>/', appView.partial_update_permission, name='Update a selected attribute for a permission'),
     path('delete-permission/<int:pk>/', appView.delete_permission, name='Delete a selected permit'),
 
+    # BackupEmail API
+    path('show-backup-email/', appView.show_backupEmail, name='List all created backup emails'),
+    path('create-backup-email/', appView.create_backupEmail, name='Create a new backup email'),
+    path('update-backup-email/<int:pk>/', appView.update_backupEmail, name='Update a selected backup email'),
+    path('partial-update-backup-email/<int:pk>/', appView.partial_update_backupEmail, name='Update a selected attribute for a backup email'),
+    path('delete-backup-email/<int:pk>/', appView.delete_backupEmail, name='Delete a selected backup email'),
+
+    # Phone API
+    path('show-backup-phone/', appView.show_phone, name='List all created backup phones'),
+    path('create-phone/', appView.create_phone, name='Create a new phone'),
+    path('update-phone/<int:pk>/', appView.update_phone, name='Update a selected phone'),
+    path('partial-update-phone/<int:pk>/', appView.partial_update_phone, name='Update a selected attribute for a phone'),
+    path('delete-phone/<int:pk>/', appView.delete_phone, name='Delete a selected phone'),
+
     # Business Model url
-    path('field-structure-view/', businessModelView.field_structure_view),
+    path('field-structure-view/', businessModelView.field_structure_view, name='Generate a json structure for all models'),
 
     # token
     path('generate_token/', views.obtain_auth_token),
