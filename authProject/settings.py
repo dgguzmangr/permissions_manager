@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'djmoney',
-    'phonenumber_field'
+    'phonenumber_field',
+    'django.contrib.gis'
 ]
 
 AUTH_USER_MODEL = 'authApp.User'
@@ -137,7 +138,7 @@ WSGI_APPLICATION = 'authProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config('db_name'),
         'USER': config('user_db'),
         'PASSWORD': config('password'),

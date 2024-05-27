@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
             'role',
             'backupEmail',
             'phone',
+            'ubication',
         ]
 
         read_only_fields = [

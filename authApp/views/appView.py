@@ -9,12 +9,14 @@ from authApp.models.role import Role
 from authApp.models.permission import Permission
 from authApp.models.backupEmail import BackupEmail
 from authApp.models.phone import Phone
+from authApp.models.ubication import Ubication
 
 from authApp.serializers.userSerializer import UserSerializer
 from authApp.serializers.roleSerializer import RoleSerializer
 from authApp.serializers.permissionSerializer import PermissionSerializer
 from authApp.serializers.backupEmailSerializer import BackupEmailSerializer
 from authApp.serializers.phoneSerializer import PhoneSerializer
+from authApp.serializers.ubicationSerializer import UbicationSerializer
 
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
@@ -232,7 +234,7 @@ def update_backupEmail(request, pk):
         return Response({"error": "Backup email not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        serializer = BackupEmailSerializer(BackupEmail, data=request.data)
+        serializer = BackupEmailSerializer(backupEmail, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -271,7 +273,7 @@ def delete_backupEmail(request, pk):
 def show_phone(request):
     if request.method == 'GET':
         phone = Phone.objects.all()
-        serializer = PhoneSerializer(Phone, many=True)
+        serializer = PhoneSerializer(phone, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 @swagger_auto_schema(method='post', request_body=PhoneSerializer, responses={201: PhoneSerializer}, tags=['Phone'])
@@ -293,7 +295,7 @@ def update_phone(request, pk):
         return Response({"error": "Phone not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        serializer = PhoneSerializer(Phone, data=request.data)
+        serializer = PhoneSerializer(phone, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -323,6 +325,67 @@ def delete_phone(request, pk):
         return Response({"error": "Phone not found"}, status=status.HTTP_404_NOT_FOUND)
     if request.method == 'DELETE':
         phone.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Ubication API
+
+@swagger_auto_schema(method='get', responses={200: UbicationSerializer(many=True)} , tags=['Ubication'])
+@api_view(['GET'])
+def show_ubication(request):
+    if request.method == 'GET':
+        ubication = Ubication.objects.all()
+        serializer = UbicationSerializer(ubication, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(method='post', request_body=UbicationSerializer, responses={201: UbicationSerializer}, tags=['Ubication'])
+@api_view(['POST'])
+def create_ubication(request):
+    if request.method == 'POST':
+        serializer = UbicationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='put', request_body=UbicationSerializer, responses={200: UbicationSerializer}, tags=['Ubication'])
+@api_view(['PUT'])
+def update_ubication(request, pk):
+    try:
+        ubication = Ubication.objects.get(pk=pk)
+    except ubication.DoesNotExist:
+        return Response({"error": "Ubication not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = UbicationSerializer(ubication, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='patch', request_body=UbicationSerializer, responses={200: UbicationSerializer}, tags=['Ubication'])
+@api_view(['PATCH'])
+def partial_update_ubication(request, pk):
+    try:
+        ubication = Ubication.objects.get(pk=pk)
+    except Ubication.DoesNotExist:
+        return Response({"error": "Ubication not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        serializer = UbicationSerializer(ubication, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['Ubication'])
+@api_view(['DELETE'])
+def delete_ubication(request, pk):
+    try:
+        ubication = Ubication.objects.get(pk=pk)
+    except Ubication.DoesNotExist:
+        return Response({"error": "Ubication not found"}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'DELETE':
+        ubication.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Login API

@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .role import Role
 from .backupEmail import BackupEmail
 from .phone import Phone
+from .ubication import Ubication
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -46,6 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.ManyToManyField(Role, related_name='user')
     backupEmail = models.ForeignKey(BackupEmail, on_delete=models.CASCADE, related_name='user')
     phone = models.ForeignKey(Phone, on_delete=models.CASCADE, related_name='user')
+    ubication = models.ForeignKey(Ubication, on_delete=models.CASCADE, related_name='user')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)

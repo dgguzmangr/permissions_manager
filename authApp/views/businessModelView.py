@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from authApp.serializers import UserSerializer, PermissionSerializer, RoleSerializer, BackupEmailSerializer, PhoneSerializer
+from authApp.serializers import UserSerializer, PermissionSerializer, RoleSerializer, BackupEmailSerializer, PhoneSerializer, UbicationSerializer
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
 from django.contrib.auth import login as auth_login # comentar par deshabilitar seguridad
@@ -16,6 +16,7 @@ from drf_yasg import openapi
         'permission': openapi.Schema(type=openapi.TYPE_OBJECT),
         'backupEmail': openapi.Schema(type=openapi.TYPE_OBJECT),
         'phone': openapi.Schema(type=openapi.TYPE_OBJECT),
+        'ubication': openapi.Schema(type=openapi.TYPE_OBJECT),
     }
 ))}, tags=['Field structure view'])
 @api_view(['GET'])
@@ -25,12 +26,14 @@ def field_structure_view(request):
     roleSerializer = RoleSerializer()
     backupEmailSerializer = BackupEmailSerializer()
     phoneSerializer = PhoneSerializer()
+    ubicationSerializer = UbicationSerializer()
 
     user_fields = get_serializer_fields_info(userSerializer)
     permission_fields = get_serializer_fields_info(permissionSerializer)
     role_fields = get_serializer_fields_info(roleSerializer)
     backupEmail_fields = get_serializer_fields_info(backupEmailSerializer)
     phone_fields = get_serializer_fields_info(phoneSerializer)
+    ubication_fields = get_serializer_fields_info(ubicationSerializer)
 
     field_structure = {
         'user': user_fields,
@@ -38,6 +41,7 @@ def field_structure_view(request):
         'role': role_fields,
         'backupEmail': backupEmail_fields,
         'phone': phone_fields,
+        'ubication': ubication_fields,
     }
 
     return Response(field_structure, status=status.HTTP_200_OK)
