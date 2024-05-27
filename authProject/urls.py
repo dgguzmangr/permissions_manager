@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView) # comentar par deshabilitar seguridad
@@ -84,6 +84,13 @@ urlpatterns = [
     path('update-phone/<int:pk>/', appView.update_phone, name='Update a selected phone'),
     path('partial-update-phone/<int:pk>/', appView.partial_update_phone, name='Update a selected attribute for a phone'),
     path('delete-phone/<int:pk>/', appView.delete_phone, name='Delete a selected phone'),
+
+    # Ubication API
+    path('show-ubications/', appView.show_ubication, name='List all created ubications'),
+    path('create-ubication/', appView.create_ubication, name='Create a new ubication'),
+    path('update-ubication/<int:pk>/', appView.update_ubication, name='Update a selected ubication'),
+    path('partial-update-ubication/<int:pk>/', appView.partial_update_ubication, name='Update a selected attribute for an ubication'),
+    path('delete-ubication/<int:pk>/', appView.delete_ubication, name='Delete a selected ubication'),
 
     # Business Model url
     path('field-structure-view/', businessModelView.field_structure_view, name='Generate a json structure for all models'),

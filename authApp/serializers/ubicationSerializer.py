@@ -5,7 +5,7 @@ class UbicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ubication
         fields = [
-            'ubication-id',
+            'ubication_id',
             'country',
             'department',
             'city',
@@ -17,7 +17,7 @@ class UbicationSerializer(serializers.ModelSerializer):
         ]
 
         read_only_fields = [
-            'ubication-id',
+            'ubication_id',
         ]
 
         def validate(self, data):
