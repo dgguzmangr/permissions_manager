@@ -99,4 +99,3 @@ class UserController:
         else:
             return standard_response(False, "Invalid credentials", status_code=status.HTTP_401_UNAUTHORIZED)
 
-

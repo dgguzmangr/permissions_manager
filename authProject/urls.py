@@ -19,7 +19,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView) # comentar par deshabilitar seguridad
 from rest_framework.authtoken import views
-from authApp.views.userRestController import UserController
 from authApp.views import appView
 from authApp.views import businessModelView
 from rest_framework import permissions
@@ -44,37 +43,42 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # User API
-    path('show-users/', UserController.show_users, name='List all created users'),
-    path('create-user/', UserController.create_user, name='Create a new user'),
-    path('update-user/<int:pk>/', UserController.update_user, name='Update a selected user'),
-    path('delete-user/<int:pk>/', UserController.delete_user, name='Delete a selected user'),
+    # path('show-users/', UserController.show_users, name='List all created users'),
+    # path('create-user/', UserController.create_user, name='Create a new user'),
+    # path('update-user/<int:pk>/', UserController.update_user, name='Update a selected user'),
+    # path('delete-user/<int:pk>/', UserController.delete_user, name='Delete a selected user'),
     #login
-    path('login/', UserController.login),
+    # path('login/', UserController.login),
 
+    # User API
+    path('show-users/', appView.show_users, name='List all created users'),
+    path('create-user/', appView.create_user, name='Create a new user'),
+    path('update-user/<int:pk>/', appView.update_user, name='Update a selected user'),
+    path('partial-update-user/<int:pk>/', appView.partial_update_user, name='Update a selected attribute for a user'),
+    path('delete-user/<int:pk>/', appView.delete_user, name='Delete a selected user'),
 
     # Role API
-    path('show-roles/', appView.show_roles),
-    path('create-role/', appView.create_role),
-    path('update-role/<int:pk>/', appView.update_role),
-    path('delete-role/<int:pk>/', appView.delete_role),
+    path('show-roles/', appView.show_roles, name='List all created roles'),
+    path('create-role/', appView.create_role, name='Create a new role'),
+    path('update-role/<int:pk>/', appView.update_role, name='Update a selected role'),
+    path('partial-update-role/<int:pk>/', appView.partial_update_role, name='Update a selected attribute for a role'),
+    path('delete-role/<int:pk>/', appView.delete_role, name='Delete a selected role'),
 
     # Permission API
     path('show-permissions/', appView.show_permissions, name='List all created permits'),
     path('create-permissions/', appView.create_permission, name='Create a new permit'),
     path('update-permission/<int:pk>/', appView.update_permission, name='Update a selected permit'),
+    path('partial-update-permission/<int:pk>/', appView.partial_update_permission, name='Update a selected attribute for a permission'),
     path('delete-permission/<int:pk>/', appView.delete_permission, name='Delete a selected permit'),
 
-    # Rol and permissions API
-    path('user-rol-list/', appView.user_role_list),                 # assign roles to users
-    path('role-permission-list/', appView.role_permission_list),    # assign permissions to roles
-    path('check-permission/', appView.check_permission),            # check permissions
-
-# Business Model url
+    # Business Model url
     path('field-structure-view/', businessModelView.field_structure_view),
-
 
     # token
     path('generate_token/', views.obtain_auth_token),
+
+    #login
+    path('login/', appView.login),
 ]
 
 # http://localhost:8000/swagger/

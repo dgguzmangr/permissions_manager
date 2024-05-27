@@ -1,31 +1,35 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
-from authApp.serializers import PermissionSerializer, RoleSerializer, RolePermissionSerializer, UserRoleSerializer
-
+from authApp.serializers import UserSerializer, PermissionSerializer, RoleSerializer
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
 from django.contrib.auth import login as auth_login # comentar par deshabilitar seguridad
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
-
+@swagger_auto_schema(method='get', responses={200: openapi.Response('Field structure', openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'user': openapi.Schema(type=openapi.TYPE_OBJECT),
+        'role': openapi.Schema(type=openapi.TYPE_OBJECT),
+        'permission': openapi.Schema(type=openapi.TYPE_OBJECT),
+    }
+))}, tags=['Field structure view'])
 @api_view(['GET'])
 def field_structure_view(request):
+    userSerializer = UserSerializer
     permissionSerializer = PermissionSerializer()
     roleSerializer = RoleSerializer()
-    rolePermissionSerializer = RolePermissionSerializer()
-    userRoleSerializer = UserRoleSerializer()
 
+    user_fields = get_serializer_fields_info(userSerializer)
     permission_fields = get_serializer_fields_info(permissionSerializer)
     role_fields = get_serializer_fields_info(roleSerializer)
-    rolePermission_fields = get_serializer_fields_info(rolePermissionSerializer)
-    userRole_fields = get_serializer_fields_info(userRoleSerializer)
 
     field_structure = {
+        'user': user_fields,
         'permission': permission_fields,
         'role': role_fields,
-        'rolePermission': rolePermission_fields,
-        'userRole': userRole_fields
     }
 
     return Response(field_structure, status=status.HTTP_200_OK)

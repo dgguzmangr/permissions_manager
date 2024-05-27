@@ -1,24 +1,85 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
+from authApp.models.user import User
 from authApp.models.role import Role
 from authApp.models.permission import Permission
-from authApp.models.userRole import UserRole
-from authApp.models.rolePermission import RolePermission
 
+from authApp.serializers.userSerializer import UserSerializer
 from authApp.serializers.roleSerializer import RoleSerializer
 from authApp.serializers.permissionSerializer import PermissionSerializer
-from authApp.serializers.userRoleSerializer import UserRoleSerializer
-from authApp.serializers.rolePermissionSerializer import RolePermissionSerializer
 
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
 from django.contrib.auth import login as auth_login # comentar par deshabilitar seguridad
 
+# User API
+
+@swagger_auto_schema(method='get', responses={200: UserSerializer(many=True)} , tags=['User'])
+@api_view(['GET'])
+def show_users(request):
+    if request.method == 'GET':
+        user = User.objects.all()
+        serializer = UserSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@swagger_auto_schema(method='post', request_body=UserSerializer, responses={201: UserSerializer}, tags=['User'])
+@api_view(['POST'])
+def create_user(request):
+    if request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='put', request_body=UserSerializer, responses={200: UserSerializer}, tags=['User'])
+@api_view(['PUT'])
+def update_user(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except user.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='patch', request_body=UserSerializer, responses={200: UserSerializer}, tags=['User'])
+@api_view(['PATCH'])
+def partial_update_user(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['User'])
+@api_view(['DELETE'])
+def delete_user(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'DELETE':
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Role API
 
+@swagger_auto_schema(method='get', responses={200: RoleSerializer(many=True)} , tags=['Role'])
 @api_view(['GET'])
 def show_roles(request):
     if request.method == 'GET':
@@ -26,6 +87,7 @@ def show_roles(request):
         serializer = RoleSerializer(role, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+@swagger_auto_schema(method='post', request_body=RoleSerializer, responses={201: RoleSerializer}, tags=['Role'])
 @api_view(['POST'])
 def create_role(request):
     if request.method == 'POST':
@@ -35,6 +97,7 @@ def create_role(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@swagger_auto_schema(method='put', request_body=RoleSerializer, responses={200: RoleSerializer}, tags=['Role'])
 @api_view(['PUT'])
 def update_role(request, pk):
     try:
@@ -49,6 +112,22 @@ def update_role(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@swagger_auto_schema(method='patch', request_body=RoleSerializer, responses={200: RoleSerializer}, tags=['Role'])
+@api_view(['PATCH'])
+def partial_update_role(request, pk):
+    try:
+        role = Role.objects.get(pk=pk)
+    except Role.DoesNotExist:
+        return Response({"error": "Role not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        serializer = RoleSerializer(role, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['Role'])
 @api_view(['DELETE'])
 def delete_role(request, pk):
     try:
@@ -61,6 +140,7 @@ def delete_role(request, pk):
 
 # Permission API
 
+@swagger_auto_schema(method='get', responses={200: PermissionSerializer(many=True)} , tags=['Permission'])
 @api_view(['GET'])
 def show_permissions(request):
     if request.method == 'GET':
@@ -68,6 +148,7 @@ def show_permissions(request):
         serializer = PermissionSerializer(permission, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+@swagger_auto_schema(method='post', request_body=PermissionSerializer, responses={201: PermissionSerializer}, tags=['Permission'])
 @api_view(['POST'])
 def create_permission(request):
     if request.method == 'POST':
@@ -77,6 +158,7 @@ def create_permission(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@swagger_auto_schema(method='put', request_body=PermissionSerializer, responses={200: PermissionSerializer}, tags=['Permission'])
 @api_view(['PUT'])
 def update_permission(request, pk):
     try:
@@ -91,6 +173,22 @@ def update_permission(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@swagger_auto_schema(method='patch', request_body=PermissionSerializer, responses={200: PermissionSerializer}, tags=['Permission'])
+@api_view(['PATCH'])
+def partial_update_permission(request, pk):
+    try:
+        permission = Permission.objects.get(pk=pk)
+    except Role.DoesNotExist:
+        return Response({"error": "Permission not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        serializer = PermissionSerializer(permission, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['Permission'])
 @api_view(['DELETE'])
 def delete_permission(request, pk):
     try:
@@ -101,97 +199,42 @@ def delete_permission(request, pk):
         permission.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# UserRole API
-
-@api_view(['GET'])
-def show_user_roles(request):
-    if request.method == 'GET':
-        userRole = UserRole.objects.all()
-        serializer = UserRoleSerializer(userRole, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-def create_user_rol(request):
-    if request.method == 'POST':
-        serializer = UserRoleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['PUT'])
-def update_user_rol(request, pk):
-    try:
-        userRole = UserRole.objects.get(pk=pk)
-    except userRole.DoesNotExist:
-        return Response({"error": "User rol not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'PUT':
-        serializer = UserRoleSerializer(userRole, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['DELETE'])
-def delete_user_rol(request, pk):
-    try:
-        userRole = UserRole.objects.get(pk=pk)
-    except UserRole.DoesNotExist:
-        return Response({"error": "User rol not found"}, status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'DELETE':
-        userRole.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-# Rol and Permission API
-
-@api_view(['GET', 'POST'])
-def user_role_list(request):
-    if request.method == 'GET':
-        user_roles = UserRole.objects.all()
-        serializer = UserRoleSerializer(user_roles, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = UserRoleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET', 'POST'])
-def role_permission_list(request):
-    if request.method == 'GET':
-        role_permissions = RolePermission.objects.all()
-        serializer = RolePermissionSerializer(role_permissions, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = RolePermissionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def check_permission(request):
-    user_id = request.GET.get('user_id')
-    permission_name = request.GET.get('permission_name')
-    
-    if not user_id or not permission_name:
-        return Response({'error': 'user_id and permission_name are required'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        user_roles = UserRole.objects.filter(user_id=user_id)
-        if user_roles.exists():
-            roles = user_roles.values_list('role', flat=True)
-            if RolePermission.objects.filter(role__in=roles, permission__name=permission_name).exists():
-                return Response({'permission': 'granted'}, status=status.HTTP_200_OK)
-        return Response({'permission': 'denied'}, status=status.HTTP_403_FORBIDDEN)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 # Login API
 
+@swagger_auto_schema(
+    method='post',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username of the user'),
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password of the user')
+        }
+    ),
+    responses={
+        200: openapi.Response(
+            description="Successful login",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'token': openapi.Schema(type=openapi.TYPE_STRING, description='Authentication token')
+                }
+            )
+        ),
+        400: openapi.Response(
+            description="Invalid username or password",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'error': openapi.Schema(type=openapi.TYPE_STRING, description='Error message')
+                }
+            )
+        )
+    },
+    tags=['Authentication']
+)
 @api_view(['POST'])
+@permission_classes([])  # Comentar o modificar según sea necesario para producción
+@authentication_classes([])  # Comentar o modificar según sea necesario para producción
 def login(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.data)
