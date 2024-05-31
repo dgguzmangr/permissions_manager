@@ -19,36 +19,29 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView) # comentar par deshabilitar seguridad
 from rest_framework.authtoken import views
-from authApp.views import appView
-from authApp.views import businessModelView
+from authApp.views import appView, businessModelView, apiGatewayView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from authApp.custom_swagger import CustomSchemaGenerator
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="API Documentation",
+        title="WMS API Gateway",
         default_version='v1',
-        description="API for Product Manager",
+        description="API for users and permissions Manager",
         contact=openapi.Contact(email="dgguzmangr@gmail.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    generator_class=CustomSchemaGenerator,
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
-    # User API
-    # path('show-users/', UserController.show_users, name='List all created users'),
-    # path('create-user/', UserController.create_user, name='Create a new user'),
-    # path('update-user/<int:pk>/', UserController.update_user, name='Update a selected user'),
-    # path('delete-user/<int:pk>/', UserController.delete_user, name='Delete a selected user'),
-    #login
-    # path('login/', UserController.login),
 
     # User API
     path('show-users/', appView.show_users, name='List all created users'),
@@ -100,6 +93,29 @@ urlpatterns = [
 
     #login
     path('login/', appView.login),
-]
+
+    # API Gateway warehouse
+    path('show-warehouses/', apiGatewayView.show_warehouses, name='List all created ubications'),
+    path('create-warehouse/', apiGatewayView.create_warehouse, name='Create a new ubication'),
+    path('update-warehouse/<int:pk>/', apiGatewayView.update_warehouse, name='Update a selected warehouse'),
+    path('partial-update-warehouse/<int:pk>/', apiGatewayView.partial_update_warehouse, name='Update a selected attribute for a warehouse'),
+    path('delete-warehouse/<int:pk>/', apiGatewayView.delete_warehouse, name='Delete a selected warehouse'),
+    path('show-warehouse-buildings/<int:pk>/', apiGatewayView.show_warehouse_buildings, name='List all buildings by warehouse'),
+
+    # API Gateway location
+    path('show-locations/', apiGatewayView.show_locations, name='List all created locationns'),
+    path('create-location/', apiGatewayView.create_location, name='Create a new location'),
+    path('update-location/<int:pk>/', apiGatewayView.update_location, name='Update a selected location'),
+    path('partial-update-location/<int:pk>/', apiGatewayView.partial_update_location, name='Update a selected attribute for a location'),
+    path('delete-location/<int:pk>/', apiGatewayView.delete_location, name='Delete a selected location'),
+
+    # API Gateway building
+    path('show-buildings/', apiGatewayView.show_buildings, name='List all created buildings'),
+    path('create-building/', apiGatewayView.create_building, name='Create a new building'),
+    path('update-building/<int:pk>/', apiGatewayView.update_building, name='Update a selected building'),
+    path('partial-update-building/<int:pk>/', apiGatewayView.partial_update_building, name='Update a selected attribute for a building'),
+    path('delete-building/<int:pk>/', apiGatewayView.delete_building, name='Delete a selected building'),
+
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # http://localhost:8000/swagger/
