@@ -309,7 +309,6 @@ def create_building(request):
             return Response({"error": "Error creating building"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
 
 @swagger_auto_schema(method='put', request_body=building_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Building'])
 @api_view(['PUT'])
@@ -372,3 +371,254 @@ def delete_building(request, pk):
             return Response({"error": "Error deleting building"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Footprint API
+footprint_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'footprint_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the footprint', readOnly=True),
+        'measurement_unit': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='Measurement unit of the footprint',
+            enum=[
+                'Gramo', 'Kilogramo', 'Tonelada', 'Mililitro', 'Litro', 'Metro cúbico', 'Metro', 'Centímetro',
+                'Metro cuadrado', 'Palet', 'Caja', 'Paquete', 'Botella', 'Barril', 'Contenedor'
+            ]
+        ),
+        'long': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Length of the footprint'),
+        'high': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Height of the footprint'),
+        'width': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Width of the footprint'),
+        'weight': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Weight of the footprint'),
+        'volume': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Volume of the footprint', readOnly=True),
+    },
+    required=['measurement_unit', 'long', 'high', 'width', 'weight']
+)
+
+@swagger_auto_schema(method='get', tags=['Footprint'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_footprints(request):
+    try:
+        url = f"{config('url_product_manager')}/show-footprints/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting footprints"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='post', request_body=footprint_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Footprint'])
+@api_view(['POST'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def create_footprint(request):
+    try:
+        url = f"{config('url_product_manager')}/create-footprint/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code == 201:
+            return Response(response.json(), status=status.HTTP_201_CREATED)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Error creating footprint"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='put', request_body=footprint_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Footprint'])
+@api_view(['PUT'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def update_footprint(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/update-footprint/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.put(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error updating footprint"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='patch', request_body=footprint_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Footprint'])
+@api_view(['PATCH'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def partial_update_footprint(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/partial-update-footprint/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.patch(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error partially updating footprint"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Footprint'])
+@api_view(['DELETE'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def delete_footprint(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/delete-footprint/{pk}/"
+        response = requests.delete(url)
+        
+        if response.status_code == 204:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error deleting footprint"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Discount API
+discount_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'discount_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the discount', readOnly=True),
+        'date': openapi.Schema(type=openapi.TYPE_STRING, format='date', description='Date when the discount was created', readOnly=True),
+        'amount': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Discount amount in percentage'),
+        'status': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Status of the discount')
+    },
+    required=['amount', 'status']
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Price API
+price_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'price_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the price', readOnly=True),
+        'amount': openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'amount': openapi.Schema(type=openapi.TYPE_NUMBER, format='decimal', description='Monetary amount'),
+                'currency': openapi.Schema(type=openapi.TYPE_STRING, description='Currency code')
+            },
+            required=['amount', 'currency'],
+            description='Amount with currency'
+        ),
+        'date': openapi.Schema(type=openapi.TYPE_STRING, format='date', description='Date of the price', readOnly=True),
+        'status': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Status of the price')
+    },
+    required=['amount', 'status']
+)
+
+# Tax API
+tax_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'tax_id': openapi.Schema(
+            type=openapi.TYPE_INTEGER, 
+            description='ID of the tax', 
+            readOnly=True
+        ),
+        'name': openapi.Schema(
+            type=openapi.TYPE_STRING, 
+            description='Name of the tax',
+            maxLength=100
+        ),
+        'percentage': openapi.Schema(
+            type=openapi.TYPE_NUMBER, 
+            format='decimal', 
+            description='Percentage of the tax',
+            maximum=100,
+            minimum=0,
+        ),
+        'status': openapi.Schema(
+            type=openapi.TYPE_BOOLEAN, 
+            description='Status of the tax'
+        ),
+    },
+    required=['name', 'percentage', 'status']
+)
+
+# Product API
+product_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'product_id': openapi.Schema(
+            type=openapi.TYPE_INTEGER, 
+            description='ID of the product', 
+            readOnly=True
+        ),
+        'sku': openapi.Schema(
+            type=openapi.TYPE_STRING, 
+            description='SKU of the product', 
+            readOnly=True
+        ),
+        'name': openapi.Schema(
+            type=openapi.TYPE_STRING, 
+            description='Name of the product', 
+            maxLength=100
+        ),
+        'short_description': openapi.Schema(
+            type=openapi.TYPE_STRING, 
+            description='Short description of the product', 
+            maxLength=30
+        ),
+        'long_description': openapi.Schema(
+            type=openapi.TYPE_STRING, 
+            description='Long description of the product', 
+            maxLength=100
+        ),
+        'footprint': openapi.Schema(
+            type=openapi.TYPE_INTEGER, 
+            description='ID of the associated footprint'
+        ),
+        'price': openapi.Schema(
+            type=openapi.TYPE_INTEGER, 
+            description='ID of the associated price'
+        ),
+        'discount': openapi.Schema(
+            type=openapi.TYPE_INTEGER, 
+            description='ID of the associated discount'
+        ),
+        'tax': openapi.Schema(
+            type=openapi.TYPE_INTEGER, 
+            description='ID of the associated tax'
+        )
+    },
+    required=['name', 'short_description', 'long_description', 'footprint', 'price', 'discount', 'tax']
+)
+

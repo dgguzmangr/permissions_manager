@@ -116,6 +116,41 @@ urlpatterns = [
     path('partial-update-building/<int:pk>/', apiGatewayView.partial_update_building, name='Update a selected attribute for a building'),
     path('delete-building/<int:pk>/', apiGatewayView.delete_building, name='Delete a selected building'),
 
+    # API Gateway footprint
+    path('show-footprints/', apiGatewayView.show_footprints, name='List all created footprints'),
+    path('create-footprint/', apiGatewayView.create_footprint, name='Create a new footprint'),
+    path('update-footprint/<int:pk>/', apiGatewayView.update_footprint, name='Update a selected footprint'),
+    path('partial-update-footprint/<int:pk>/', apiGatewayView.partial_update_footprint, name='Update a selected attribute for a footprint'),
+    path('delete-footprint/<int:pk>/', apiGatewayView.delete_footprint, name='Delete a selected footprint'),
+
+    # API Gateway discount
+    # path('show-discounts/', apiGatewayView.show_discounts, name='List all created discounts'),
+    # path('create-discount/', apiGatewayView.create_discount, name='Create a new discount'),
+    # path('update-discount/<int:pk>/', apiGatewayView.update_discount, name='Update a selected discount'),
+    # path('partial-update-discount/<int:pk>/', apiGatewayView.partial_update_discount, name='Update a selected attribute for a discount'),
+    # path('delete-discount/<int:pk>/', apiGatewayView.delete_discount, name='Delete a selected discount'),
+
+    # API Gateway price
+    # path('show-prices/', apiGatewayView.show_prices, name='List all created prices'),
+    # path('create-price/', apiGatewayView.create_price, name='Create a new price'),
+    # path('update-price/<int:pk>/', apiGatewayView.update_price, name='Update a selected price'),
+    # path('partial-update-price/<int:pk>/', apiGatewayView.partial_update_price, name='Update a selected attribute for a price'),
+    #path('delete-price/<int:pk>/', apiGatewayView.delete_price, name='Delete a selected price'),
+
+    # API Gateway tax
+    # path('show-taxes/', apiGatewayView.show_taxes, name='List all created taxes'),
+    # path('create-tax/', apiGatewayView.create_tax, name='Create a new tax'),
+    # path('update-tax/<int:pk>/', apiGatewayView.update_tax, name='Update a selected tax'),
+    # path('partial-update-tax/<int:pk>/', apiGatewayView.partial_update_tax, name='Update a selected attribute for a tax'),
+    # path('delete-tax/<int:pk>/', apiGatewayView.delete_tax, name='Delete a selected tax'),
+
+    # API Gateway product
+    # path('show-products/', apiGatewayView.show_products, name='List all created products'),
+    # path('create-product/', apiGatewayView.create_product, name='Create a new product'),
+    # path('update-product/<int:pk>/', apiGatewayView.update_product, name='Update a selected product'),
+    # path('partial-update-product/<int:pk>/', apiGatewayView.partial_update_product, name='Update a selected attribute for a product'),
+    # path('delete-product/<int:pk>/', apiGatewayView.delete_product, name='Delete a selected product'),
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # http://localhost:8000/swagger/
