@@ -503,26 +503,102 @@ discount_schema = openapi.Schema(
     required=['amount', 'status']
 )
 
+@swagger_auto_schema(method='get', tags=['Discount'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_discounts(request):
+    try:
+        url = f"{config('url_product_manager')}/show-discounts/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting discounts"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@swagger_auto_schema(method='post', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['POST'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def create_discount(request):
+    try:
+        url = f"{config('url_product_manager')}/create-discount/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code == 201:
+            return Response(response.json(), status=status.HTTP_201_CREATED)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Error creating discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@swagger_auto_schema(method='put', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['PUT'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def update_discount(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/update-discount/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.put(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error updating discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@swagger_auto_schema(method='patch', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['PATCH'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def partial_update_discount(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/partial-update-discount/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.patch(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error partially updating discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['DELETE'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def delete_discount(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/delete-discount/{pk}/"
+        response = requests.delete(url)
+        
+        if response.status_code == 204:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error deleting discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Price API
 price_schema = openapi.Schema(
@@ -543,6 +619,116 @@ price_schema = openapi.Schema(
     },
     required=['amount', 'status']
 )
+"""
+@swagger_auto_schema(method='get', tags=['Discount'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_discounts(request):
+    try:
+        url = f"{config('url_product_manager')}/show-discounts/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting discounts"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='post', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['POST'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def create_discount(request):
+    try:
+        url = f"{config('url_product_manager')}/create-discount/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code == 201:
+            return Response(response.json(), status=status.HTTP_201_CREATED)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Error creating discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='put', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['PUT'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def update_discount(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/update-discount/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.put(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error updating discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='patch', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['PATCH'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def partial_update_discount(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/partial-update-discount/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.patch(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error partially updating discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@api_view(['DELETE'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def delete_discount(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/delete-discount/{pk}/"
+        response = requests.delete(url)
+        
+        if response.status_code == 204:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error deleting discount"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+"""
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Tax API
 tax_schema = openapi.Schema(

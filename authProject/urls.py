@@ -124,11 +124,11 @@ urlpatterns = [
     path('delete-footprint/<int:pk>/', apiGatewayView.delete_footprint, name='Delete a selected footprint'),
 
     # API Gateway discount
-    # path('show-discounts/', apiGatewayView.show_discounts, name='List all created discounts'),
-    # path('create-discount/', apiGatewayView.create_discount, name='Create a new discount'),
-    # path('update-discount/<int:pk>/', apiGatewayView.update_discount, name='Update a selected discount'),
-    # path('partial-update-discount/<int:pk>/', apiGatewayView.partial_update_discount, name='Update a selected attribute for a discount'),
-    # path('delete-discount/<int:pk>/', apiGatewayView.delete_discount, name='Delete a selected discount'),
+    path('show-discounts/', apiGatewayView.show_discounts, name='List all created discounts'),
+    path('create-discount/', apiGatewayView.create_discount, name='Create a new discount'),
+    path('update-discount/<int:pk>/', apiGatewayView.update_discount, name='Update a selected discount'),
+    path('partial-update-discount/<int:pk>/', apiGatewayView.partial_update_discount, name='Update a selected attribute for a discount'),
+    path('delete-discount/<int:pk>/', apiGatewayView.delete_discount, name='Delete a selected discount'),
 
     # API Gateway price
     # path('show-prices/', apiGatewayView.show_prices, name='List all created prices'),
