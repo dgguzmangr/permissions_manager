@@ -86,7 +86,9 @@ urlpatterns = [
     path('delete-ubication/<int:pk>/', appView.delete_ubication, name='Delete a selected ubication'),
 
     # Business Model url
-    path('field-structure-view/', businessModelView.field_structure_view, name='Generate a json structure for all models'),
+    path('permissions-manager-field-structure/', businessModelView.permissions_field_structure_view, name='Generate a json structure for all models'),
+    path('products-manager-field-structure/', apiGatewayView.products_field_structure_view, name='Generate a json structure for all models'),
+    path('warehouses-manager-field-structure/', apiGatewayView.warehouses_field_structure_view, name='Generate a json structure for all models'),
 
     # token
     path('generate_token/', views.obtain_auth_token),
@@ -131,25 +133,29 @@ urlpatterns = [
     path('delete-discount/<int:pk>/', apiGatewayView.delete_discount, name='Delete a selected discount'),
 
     # API Gateway price
-    # path('show-prices/', apiGatewayView.show_prices, name='List all created prices'),
-    # path('create-price/', apiGatewayView.create_price, name='Create a new price'),
-    # path('update-price/<int:pk>/', apiGatewayView.update_price, name='Update a selected price'),
-    # path('partial-update-price/<int:pk>/', apiGatewayView.partial_update_price, name='Update a selected attribute for a price'),
-    #path('delete-price/<int:pk>/', apiGatewayView.delete_price, name='Delete a selected price'),
+    path('show-prices/', apiGatewayView.show_prices, name='List all created prices'),
+    path('create-price/', apiGatewayView.create_price, name='Create a new price'),
+    path('update-price/<int:pk>/', apiGatewayView.update_price, name='Update a selected price'),
+    path('partial-update-price/<int:pk>/', apiGatewayView.partial_update_price, name='Update a selected attribute for a price'),
+    path('delete-price/<int:pk>/', apiGatewayView.delete_price, name='Delete a selected price'),
 
     # API Gateway tax
-    # path('show-taxes/', apiGatewayView.show_taxes, name='List all created taxes'),
-    # path('create-tax/', apiGatewayView.create_tax, name='Create a new tax'),
-    # path('update-tax/<int:pk>/', apiGatewayView.update_tax, name='Update a selected tax'),
-    # path('partial-update-tax/<int:pk>/', apiGatewayView.partial_update_tax, name='Update a selected attribute for a tax'),
-    # path('delete-tax/<int:pk>/', apiGatewayView.delete_tax, name='Delete a selected tax'),
+    path('show-taxes/', apiGatewayView.show_taxes, name='List all created taxes'),
+    path('create-tax/', apiGatewayView.create_tax, name='Create a new tax'),
+    path('update-tax/<int:pk>/', apiGatewayView.update_tax, name='Update a selected tax'),
+    path('partial-update-tax/<int:pk>/', apiGatewayView.partial_update_tax, name='Update a selected attribute for a tax'),
+    path('delete-tax/<int:pk>/', apiGatewayView.delete_tax, name='Delete a selected tax'),
 
     # API Gateway product
-    # path('show-products/', apiGatewayView.show_products, name='List all created products'),
-    # path('create-product/', apiGatewayView.create_product, name='Create a new product'),
-    # path('update-product/<int:pk>/', apiGatewayView.update_product, name='Update a selected product'),
-    # path('partial-update-product/<int:pk>/', apiGatewayView.partial_update_product, name='Update a selected attribute for a product'),
-    # path('delete-product/<int:pk>/', apiGatewayView.delete_product, name='Delete a selected product'),
+    path('show-products/', apiGatewayView.show_products, name='List all created products'),
+    path('create-product/', apiGatewayView.create_product, name='Create a new product'),
+    path('update-product/<int:pk>/', apiGatewayView.update_product, name='Update a selected product'),
+    path('partial-update-product/<int:pk>/', apiGatewayView.partial_update_product, name='Update a selected attribute for a product'),
+    path('delete-product/<int:pk>/', apiGatewayView.delete_product, name='Delete a selected product'),
+    path('show-product-discounts/<int:pk>/', apiGatewayView.show_product_discounts, name='List all discounts per product'),
+    path('show-product-footprint/<int:pk>/', apiGatewayView.show_product_footprint, name='List footprint per products'),
+    path('show-product-prices/<int:pk>/', apiGatewayView.show_product_prices, name='List all prices per products'),
+    path('show-product-taxes/<int:pk>/', apiGatewayView.show_product_taxes, name='List all taxes per products'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

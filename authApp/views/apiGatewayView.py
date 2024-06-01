@@ -619,29 +619,29 @@ price_schema = openapi.Schema(
     },
     required=['amount', 'status']
 )
-"""
-@swagger_auto_schema(method='get', tags=['Discount'])
+
+@swagger_auto_schema(method='get', tags=['Price'])
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
-def show_discounts(request):
+def show_prices(request):
     try:
-        url = f"{config('url_product_manager')}/show-discounts/"
+        url = f"{config('url_product_manager')}/show-prices/"
         response = requests.get(url)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting discounts"}, status=response.status_code)
+            return Response({"error": "Error getting prices"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='post', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Discount'])
+@swagger_auto_schema(method='post', request_body=price_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Price'])
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
-def create_discount(request):
+def create_price(request):
     try:
-        url = f"{config('url_product_manager')}/create-discount/"
+        url = f"{config('url_product_manager')}/create-price/"
         payload = request.data
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, json=payload, headers=headers)
@@ -651,17 +651,17 @@ def create_discount(request):
         elif response.status_code == 400:
             return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"error": "Error creating discount"}, status=response.status_code)
+            return Response({"error": "Error creating price"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@swagger_auto_schema(method='put', request_body=price_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Price'])
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
-def update_discount(request, pk):
+def update_price(request, pk):
     try:
-        url = f"{config('url_product_manager')}/update-discount/{pk}/"
+        url = f"{config('url_product_manager')}/update-price/{pk}/"
         payload = request.data
         headers = {'Content-Type': 'application/json'}
         response = requests.put(url, json=payload, headers=headers)
@@ -673,17 +673,17 @@ def update_discount(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating discount"}, status=response.status_code)
+            return Response({"error": "Error updating price"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@swagger_auto_schema(method='patch', request_body=price_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Price'])
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
-def partial_update_discount(request, pk):
+def partial_update_price(request, pk):
     try:
-        url = f"{config('url_product_manager')}/partial-update-discount/{pk}/"
+        url = f"{config('url_product_manager')}/partial-update-price/{pk}/"
         payload = request.data
         headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
@@ -695,17 +695,17 @@ def partial_update_discount(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error partially updating discount"}, status=response.status_code)
+            return Response({"error": "Error partially updating price"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Price'])
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
-def delete_discount(request, pk):
+def delete_price(request, pk):
     try:
-        url = f"{config('url_product_manager')}/delete-discount/{pk}/"
+        url = f"{config('url_product_manager')}/delete-price/{pk}/"
         response = requests.delete(url)
         
         if response.status_code == 204:
@@ -713,22 +713,9 @@ def delete_discount(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error deleting discount"}, status=response.status_code)
+            return Response({"error": "Error deleting price"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-"""
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Tax API
 tax_schema = openapi.Schema(
@@ -758,6 +745,103 @@ tax_schema = openapi.Schema(
     },
     required=['name', 'percentage', 'status']
 )
+
+@swagger_auto_schema(method='get', tags=['Tax'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_taxes(request):
+    try:
+        url = f"{config('url_product_manager')}/show-taxes/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting taxes"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='post', request_body=tax_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Tax'])
+@api_view(['POST'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def create_tax(request):
+    try:
+        url = f"{config('url_product_manager')}/create-tax/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code == 201:
+            return Response(response.json(), status=status.HTTP_201_CREATED)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Error creating tax"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='put', request_body=tax_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Tax'])
+@api_view(['PUT'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def update_tax(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/update-tax/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.put(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error updating tax"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='patch', request_body=tax_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Tax'])
+@api_view(['PATCH'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def partial_update_tax(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/partial-update-tax/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.patch(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error partially updating tax"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Tax'])
+@api_view(['DELETE'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def delete_tax(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/delete-tax/{pk}/"
+        response = requests.delete(url)
+        
+        if response.status_code == 204:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error deleting tax"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Product API
 product_schema = openapi.Schema(
@@ -808,3 +892,191 @@ product_schema = openapi.Schema(
     required=['name', 'short_description', 'long_description', 'footprint', 'price', 'discount', 'tax']
 )
 
+@swagger_auto_schema(method='get', tags=['Product'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_products(request):
+    try:
+        url = f"{config('url_product_manager')}/show-products/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting products"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='post', request_body=product_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Product'])
+@api_view(['POST'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def create_product(request):
+    try:
+        url = f"{config('url_product_manager')}/create-product/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code == 201:
+            return Response(response.json(), status=status.HTTP_201_CREATED)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Error creating product"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='put', request_body=product_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Product'])
+@api_view(['PUT'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def update_product(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/update-product/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.put(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error updating product"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='patch', request_body=product_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Product'])
+@api_view(['PATCH'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def partial_update_product(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/partial-update-product/{pk}/"
+        payload = request.data
+        headers = {'Content-Type': 'application/json'}
+        response = requests.patch(url, json=payload, headers=headers)
+        
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        elif response.status_code == 400:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error partially updating product"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Product'])
+@api_view(['DELETE'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def delete_product(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/delete-product/{pk}/"
+        response = requests.delete(url)
+        
+        if response.status_code == 204:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif response.status_code == 404:
+            return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Error deleting product"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='get', tags=['Product'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_product_discounts(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/show-product-discounts/{pk}/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting product discounts"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='get', tags=['Product'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_product_footprint(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/show-product-footprint/{pk}/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting product footprint"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='get', tags=['Product'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_product_prices(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/show-product-prices/{pk}/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting product prices"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='get', tags=['Product'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def show_product_taxes(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/show-product-taxes/{pk}/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting product taxes"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Field structure view API
+
+@swagger_auto_schema(method='get', tags=['Field structure view'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def products_field_structure_view(request):
+    try:
+        url = f"{config('url_product_manager')}/products-manager-field-structure/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting products manager field structure"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@swagger_auto_schema(method='get', tags=['Field structure view'])
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def warehouses_field_structure_view(request):
+    try:
+        url = f"{config('url_warehouse_manager')}/warehouse-manager-field-structure/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Error getting warehouses manager field structure"}, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -20,7 +20,7 @@ from drf_yasg import openapi
     }
 ))}, tags=['Field structure view'])
 @api_view(['GET'])
-def field_structure_view(request):
+def permissions_field_structure_view(request):
     userSerializer = UserSerializer()
     permissionSerializer = PermissionSerializer()
     roleSerializer = RoleSerializer()
