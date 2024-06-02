@@ -97,6 +97,25 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("authApp.update_prices", "Can update prices",),
             ("authApp.partial_update_prices", "Can update partially prices",),
             ("authApp.delete_prices", "Can delete prices",),
+            # Tax API Gateway
+            ("authApp.show_taxes", "Can view taxes",),
+            ("authApp.create_taxes", "Can create taxes",),
+            ("authApp.update_taxes", "Can update taxes",),
+            ("authApp.partial_update_taxes", "Can update partially taxes",),
+            ("authApp.delete_taxes", "Can delete taxes",),
+            # Product API Gateway
+            ("authApp.show_products", "Can view products",),
+            ("authApp.create_products", "Can create products",),
+            ("authApp.update_products", "Can update products",),
+            ("authApp.partial_update_products", "Can update partially products",),
+            ("authApp.delete_products", "Can delete products",),
+            ("authApp.show_product_discounts", "Can view discounts filtered by products",),
+            ("authApp.show_product_footprints", "Can view footprints filtered by products",),
+            ("authApp.show_product_prices", "Can view prices filtered by products",),
+            ("authApp.show_product_taxes", "Can view taxes filtered by products",),
+            # Field structure view API Gateway
+            ("authApp.products_field_structure_view", "Gets the field structure of the products backend",),
+            ("authApp.warehouse_field_structure_view", "Gets the field structure of the warehouse backend",),
         ]
 
     def save(self, *args, **kwargs):

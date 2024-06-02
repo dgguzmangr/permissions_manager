@@ -781,6 +781,7 @@ tax_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_taxes', raise_exception=True)
 def show_taxes(request):
     try:
         url = f"{config('url_product_manager')}/show-taxes/"
@@ -796,6 +797,7 @@ def show_taxes(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_taxes', raise_exception=True)
 def create_tax(request):
     try:
         url = f"{config('url_product_manager')}/create-tax/"
@@ -816,6 +818,7 @@ def create_tax(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_taxes', raise_exception=True)
 def update_tax(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-tax/{pk}/"
@@ -838,6 +841,7 @@ def update_tax(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_taxes', raise_exception=True)
 def partial_update_tax(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-tax/{pk}/"
@@ -860,6 +864,7 @@ def partial_update_tax(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_taxes', raise_exception=True)
 def delete_tax(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-tax/{pk}/"
@@ -927,6 +932,7 @@ product_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_products', raise_exception=True)
 def show_products(request):
     try:
         url = f"{config('url_product_manager')}/show-products/"
@@ -942,6 +948,7 @@ def show_products(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_products', raise_exception=True)
 def create_product(request):
     try:
         url = f"{config('url_product_manager')}/create-product/"
@@ -962,6 +969,7 @@ def create_product(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_products', raise_exception=True)
 def update_product(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-product/{pk}/"
@@ -984,6 +992,7 @@ def update_product(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_products', raise_exception=True)
 def partial_update_product(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-product/{pk}/"
@@ -1006,6 +1015,7 @@ def partial_update_product(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_products', raise_exception=True)
 def delete_product(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-product/{pk}/"
@@ -1024,6 +1034,7 @@ def delete_product(request, pk):
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_product_discounts', raise_exception=True)
 def show_product_discounts(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-discounts/{pk}/"
@@ -1039,6 +1050,7 @@ def show_product_discounts(request, pk):
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_product_footprints', raise_exception=True)
 def show_product_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-footprint/{pk}/"
@@ -1054,6 +1066,7 @@ def show_product_footprint(request, pk):
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_product_prices', raise_exception=True)
 def show_product_prices(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-prices/{pk}/"
@@ -1069,6 +1082,7 @@ def show_product_prices(request, pk):
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_product_taxes', raise_exception=True)
 def show_product_taxes(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-taxes/{pk}/"
@@ -1081,11 +1095,11 @@ def show_product_taxes(request, pk):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Field structure view API
-
 @swagger_auto_schema(method='get', tags=['Field structure view'])
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.products_field_structure_view', raise_exception=True)
 def products_field_structure_view(request):
     try:
         url = f"{config('url_product_manager')}/products-manager-field-structure/"
@@ -1101,6 +1115,7 @@ def products_field_structure_view(request):
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.warehouse_field_structure_view', raise_exception=True)
 def warehouses_field_structure_view(request):
     try:
         url = f"{config('url_warehouse_manager')}/warehouse-manager-field-structure/"
