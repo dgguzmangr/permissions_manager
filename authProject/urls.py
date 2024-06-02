@@ -56,6 +56,7 @@ urlpatterns = [
     path('update-role/<int:pk>/', appView.update_role, name='Update a selected role'),
     path('partial-update-role/<int:pk>/', appView.partial_update_role, name='Update a selected attribute for a role'),
     path('delete-role/<int:pk>/', appView.delete_role, name='Delete a selected role'),
+    path('assign-role-to-user/', appView.assign_role_to_user, name='Assign role to user'),
 
     # Permission API
     path('show-permissions/', appView.show_permissions, name='List all created permits'),
@@ -63,6 +64,7 @@ urlpatterns = [
     path('update-permission/<int:pk>/', appView.update_permission, name='Update a selected permit'),
     path('partial-update-permission/<int:pk>/', appView.partial_update_permission, name='Update a selected attribute for a permission'),
     path('delete-permission/<int:pk>/', appView.delete_permission, name='Delete a selected permit'),
+    path('assign-permission-to-role/', appView.assign_permission_to_role, name='Assign permission to role'),
 
     # BackupEmail API
     path('show-backup-email/', appView.show_backupEmail, name='List all created backup emails'),

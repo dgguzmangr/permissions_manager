@@ -59,6 +59,45 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         app_label = 'authApp'
+        permissions = [
+            # Warehouses API Gateway
+            ("authApp.show_warehouses", "Can view warehouses",),
+            ("authApp.create_warehouses", "Can create warehouses",),
+            ("authApp.update_warehouses", "Can update warehouses",),
+            ("authApp.partial_update_warehouses", "Can update partially warehouses",),
+            ("authApp.delete_warehouses", "Can delete warehouses",),
+            ("authApp.show_warehouse_buildings", "Can view buildings filtered by warehouses",),
+            # Warehouses API Gateway
+            ("authApp.show_locations", "Can view locations",),
+            ("authApp.create_locations", "Can create locations",),
+            ("authApp.update_locations", "Can update locations",),
+            ("authApp.partial_update_locations", "Can update partially locations",),
+            ("authApp.delete_locations", "Can delete locations",),
+            # Building API Gateway
+            ("authApp.show_buildings", "Can view buildings",),
+            ("authApp.create_buildings", "Can create buildings",),
+            ("authApp.update_buildings", "Can update buildings",),
+            ("authApp.partial_update_buildings", "Can update partially buildings",),
+            ("authApp.delete_buildings", "Can delete buildings",),
+            # Footprint API Gateway
+            ("authApp.show_footprints", "Can view footprints",),
+            ("authApp.create_footprints", "Can create footprints",),
+            ("authApp.update_footprints", "Can update footprints",),
+            ("authApp.partial_update_footprints", "Can update partially footprints",),
+            ("authApp.delete_footprints", "Can delete footprints",),
+            # Discount API Gateway
+            ("authApp.show_discounts", "Can view discounts",),
+            ("authApp.create_discounts", "Can create discounts",),
+            ("authApp.update_discounts", "Can update discounts",),
+            ("authApp.partial_update_discounts", "Can update partially discounts",),
+            ("authApp.delete_discounts", "Can delete discounts",),
+            # Price API Gateway
+            ("authApp.show_prices", "Can view prices",),
+            ("authApp.create_prices", "Can create prices",),
+            ("authApp.update_prices", "Can update prices",),
+            ("authApp.partial_update_prices", "Can update partially prices",),
+            ("authApp.delete_prices", "Can delete prices",),
+        ]
 
     def save(self, *args, **kwargs):
         self.username = self.email

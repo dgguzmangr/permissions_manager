@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from django.contrib.auth.decorators import permission_required
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -147,6 +148,23 @@ def delete_role(request, pk):
         role.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@swagger_auto_schema(method='post', request_body=RoleSerializer, responses={201: RoleSerializer}, tags=['Role'])
+@api_view(['POST'])
+def assign_role_to_user(request):
+    user_id = request.data.get('user_id')
+    role_id = request.data.get('role_id')
+    
+    try:
+        user = User.objects.get(pk=user_id)
+        role = Role.objects.get(pk=role_id)
+        user.role.add(role)
+        return Response({'message': 'Role assigned to user successfully'}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Role.DoesNotExist:
+        return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 # Permission API
 
 @swagger_auto_schema(method='get', responses={200: PermissionSerializer(many=True)} , tags=['Permission'])
@@ -207,6 +225,22 @@ def delete_permission(request, pk):
     if request.method == 'DELETE':
         permission.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@swagger_auto_schema(method='post', request_body=PermissionSerializer, responses={201: PermissionSerializer}, tags=['Permission'])
+@api_view(['POST'])
+def assign_permission_to_role(request):
+    role_id = request.data.get('role_id')
+    permission_id = request.data.get('permission_id')
+
+    try:
+        role = Role.objects.get(pk=role_id)
+        permission = Permission.objects.get(pk=permission_id)
+        role.permission.add(permission)
+        return Response({'message': 'Permission assigned to role successfully'}, status=status.HTTP_200_OK)
+    except Role.DoesNotExist:
+        return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Permission.DoesNotExist:
+        return Response({'error': 'Permission not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # BackupEmail API
 

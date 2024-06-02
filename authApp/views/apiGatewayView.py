@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from django.contrib.auth.decorators import permission_required
+
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -21,7 +23,6 @@ response_400 = openapi.Response(description="Bad request")
 response_500 = openapi.Response(description="Internal server error")
 
 # Warehouse API
-
 warehouse_schema = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
@@ -42,6 +43,7 @@ warehouse_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_warehouses', raise_exception=True)
 def show_warehouses(request):
     try:
         url = f"{config('url_warehouse_manager')}/show-warehouses/"
@@ -57,6 +59,7 @@ def show_warehouses(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_warehouses', raise_exception=True)
 def create_warehouse(request):
     try:
         url = f"{config('url_warehouse_manager')}/create-warehouse/"
@@ -77,6 +80,7 @@ def create_warehouse(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_warehouses', raise_exception=True)
 def update_warehouse(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/update-warehouse/{pk}/"
@@ -99,6 +103,7 @@ def update_warehouse(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_warehouses', raise_exception=True)
 def partial_update_warehouse(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/partial-update-warehouse/{pk}/"
@@ -121,6 +126,7 @@ def partial_update_warehouse(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_warehouses', raise_exception=True)
 def delete_warehouse(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/delete-warehouse/{pk}/"
@@ -139,6 +145,7 @@ def delete_warehouse(request, pk):
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_warehouse_buildings', raise_exception=True)
 def show_warehouse_buildings(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/show-warehouse-buildings/{pk}/"
@@ -151,7 +158,6 @@ def show_warehouse_buildings(request, pk):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Location API
-
 location_schema = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
@@ -171,6 +177,7 @@ location_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_locations', raise_exception=True)
 def show_locations(request):
     try:
         url = f"{config('url_warehouse_manager')}/show-locations/"
@@ -186,6 +193,7 @@ def show_locations(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_locations', raise_exception=True)
 def create_location(request):
     try:
         url = f"{config('url_warehouse_manager')}/create-location/"
@@ -206,6 +214,7 @@ def create_location(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_locations', raise_exception=True)
 def update_location(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/update-location/{pk}/"
@@ -228,6 +237,7 @@ def update_location(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_locations', raise_exception=True)
 def partial_update_location(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/partial-update-location/{pk}/"
@@ -250,6 +260,7 @@ def partial_update_location(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_locations', raise_exception=True)
 def delete_location(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/delete-location/{pk}/"
@@ -279,6 +290,7 @@ building_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_buildings', raise_exception=True)
 def show_buildings(request):
     try:
         url = f"{config('url_warehouse_manager')}/show-buildings/"
@@ -294,6 +306,7 @@ def show_buildings(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_buildings', raise_exception=True)
 def create_building(request):
     try:
         url = f"{config('url_warehouse_manager')}/create-building/"
@@ -314,6 +327,7 @@ def create_building(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_buildings', raise_exception=True)
 def update_building(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/update-building/{pk}/"
@@ -336,6 +350,7 @@ def update_building(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_buildings', raise_exception=True)
 def partial_update_building(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/partial-update-building/{pk}/"
@@ -358,6 +373,7 @@ def partial_update_building(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_buildings', raise_exception=True)
 def delete_building(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/delete-building/{pk}/"
@@ -398,6 +414,7 @@ footprint_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_footprints', raise_exception=True)
 def show_footprints(request):
     try:
         url = f"{config('url_product_manager')}/show-footprints/"
@@ -413,6 +430,7 @@ def show_footprints(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_footprints', raise_exception=True)
 def create_footprint(request):
     try:
         url = f"{config('url_product_manager')}/create-footprint/"
@@ -433,6 +451,7 @@ def create_footprint(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_footprints', raise_exception=True)
 def update_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-footprint/{pk}/"
@@ -455,6 +474,7 @@ def update_footprint(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_footprints', raise_exception=True)
 def partial_update_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-footprint/{pk}/"
@@ -477,6 +497,7 @@ def partial_update_footprint(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_footprints', raise_exception=True)
 def delete_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-footprint/{pk}/"
@@ -507,6 +528,7 @@ discount_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_discounts', raise_exception=True)
 def show_discounts(request):
     try:
         url = f"{config('url_product_manager')}/show-discounts/"
@@ -522,6 +544,7 @@ def show_discounts(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_discounts', raise_exception=True)
 def create_discount(request):
     try:
         url = f"{config('url_product_manager')}/create-discount/"
@@ -542,6 +565,7 @@ def create_discount(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_discounts', raise_exception=True)
 def update_discount(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-discount/{pk}/"
@@ -564,6 +588,7 @@ def update_discount(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_discounts', raise_exception=True)
 def partial_update_discount(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-discount/{pk}/"
@@ -586,6 +611,7 @@ def partial_update_discount(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_discounts', raise_exception=True)
 def delete_discount(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-discount/{pk}/"
@@ -624,6 +650,7 @@ price_schema = openapi.Schema(
 @api_view(['GET'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.show_prices', raise_exception=True)
 def show_prices(request):
     try:
         url = f"{config('url_product_manager')}/show-prices/"
@@ -639,6 +666,7 @@ def show_prices(request):
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.create_prices', raise_exception=True)
 def create_price(request):
     try:
         url = f"{config('url_product_manager')}/create-price/"
@@ -659,6 +687,7 @@ def create_price(request):
 @api_view(['PUT'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.update_prices', raise_exception=True)
 def update_price(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-price/{pk}/"
@@ -681,6 +710,7 @@ def update_price(request, pk):
 @api_view(['PATCH'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.partial_update_prices', raise_exception=True)
 def partial_update_price(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-price/{pk}/"
@@ -703,6 +733,7 @@ def partial_update_price(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])  # Ajustar según sea necesario
 @authentication_classes([])  # Ajustar según sea necesario
+@permission_required('authApp.delete_prices', raise_exception=True)
 def delete_price(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-price/{pk}/"
