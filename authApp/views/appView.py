@@ -9,14 +9,14 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from authApp.models.user import User
-from authApp.models.role import Role
-from authApp.models.permission import Permission
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from authApp.models.backupEmail import BackupEmail
 from authApp.models.phone import Phone
 from authApp.models.ubication import Ubication
 
 from authApp.serializers.userSerializer import UserSerializer
-from authApp.serializers.roleSerializer import RoleSerializer
+from authApp.serializers.groupSerializer import GroupSerializer
 from authApp.serializers.permissionSerializer import PermissionSerializer
 from authApp.serializers.backupEmailSerializer import BackupEmailSerializer
 from authApp.serializers.phoneSerializer import PhoneSerializer
@@ -87,83 +87,83 @@ def delete_user(request, pk):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# Role API
 
-@swagger_auto_schema(method='get', responses={200: RoleSerializer(many=True)} , tags=['Role'])
+# Group API
+
+@swagger_auto_schema(method='get', responses={200: GroupSerializer(many=True)} , tags=['Group'])
 @api_view(['GET'])
-def show_roles(request):
+def show_groups(request):
     if request.method == 'GET':
-        role = Role.objects.all()
-        serializer = RoleSerializer(role, many=True)
+        group = Group.objects.all()
+        serializer = GroupSerializer(group, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-@swagger_auto_schema(method='post', request_body=RoleSerializer, responses={201: RoleSerializer}, tags=['Role'])
+@swagger_auto_schema(method='post', request_body=GroupSerializer, responses={201: GroupSerializer}, tags=['Group'])
 @api_view(['POST'])
-def create_role(request):
+def create_group(request):
     if request.method == 'POST':
-        serializer = RoleSerializer(data=request.data)
+        serializer = GroupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@swagger_auto_schema(method='put', request_body=RoleSerializer, responses={200: RoleSerializer}, tags=['Role'])
+@swagger_auto_schema(method='put', request_body=GroupSerializer, responses={200: GroupSerializer}, tags=['Group'])
 @api_view(['PUT'])
-def update_role(request, pk):
+def update_group(request, pk):
     try:
-        role = Role.objects.get(pk=pk)
-    except role.DoesNotExist:
-        return Response({"error": "Role not found"}, status=status.HTTP_404_NOT_FOUND)
+        group = Group.objects.get(pk=pk)
+    except group.DoesNotExist:
+        return Response({"error": "Group not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        serializer = RoleSerializer(role, data=request.data)
+        serializer = GroupSerializer(group, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@swagger_auto_schema(method='patch', request_body=RoleSerializer, responses={200: RoleSerializer}, tags=['Role'])
+@swagger_auto_schema(method='patch', request_body=GroupSerializer, responses={200: GroupSerializer}, tags=['Group'])
 @api_view(['PATCH'])
-def partial_update_role(request, pk):
+def partial_update_group(request, pk):
     try:
-        role = Role.objects.get(pk=pk)
-    except Role.DoesNotExist:
-        return Response({"error": "Role not found"}, status=status.HTTP_404_NOT_FOUND)
+        group = Group.objects.get(pk=pk)
+    except Group.DoesNotExist:
+        return Response({"error": "Group not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PATCH':
-        serializer = RoleSerializer(role, data=request.data, partial=True)
+        serializer = GroupSerializer(group, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['Role'])
+@swagger_auto_schema(method='delete', responses={204: 'No Content'}, tags=['Group'])
 @api_view(['DELETE'])
-def delete_role(request, pk):
+def delete_group(request, pk):
     try:
-        role = Role.objects.get(pk=pk)
-    except Role.DoesNotExist:
-        return Response({"error": "Role not found"}, status=status.HTTP_404_NOT_FOUND)
+        group = Group.objects.get(pk=pk)
+    except Group.DoesNotExist:
+        return Response({"error": "Group not found"}, status=status.HTTP_404_NOT_FOUND)
     if request.method == 'DELETE':
-        role.delete()
+        group.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@swagger_auto_schema(method='post', request_body=RoleSerializer, responses={201: RoleSerializer}, tags=['Role'])
+@swagger_auto_schema(method='post', request_body=GroupSerializer, responses={201: GroupSerializer}, tags=['Group'])
 @api_view(['POST'])
-def assign_role_to_user(request):
+def assign_group_to_user(request):
     user_id = request.data.get('user_id')
-    role_id = request.data.get('role_id')
+    id = request.data.get('id')
     
     try:
         user = User.objects.get(pk=user_id)
-        role = Role.objects.get(pk=role_id)
-        user.role.add(role)
-        return Response({'message': 'Role assigned to user successfully'}, status=status.HTTP_200_OK)
+        group = Group.objects.get(pk=id)
+        user.group.add(group)
+        return Response({'message': 'Group assigned to user successfully'}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-    except Role.DoesNotExist:
-        return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
-
+    except Group.DoesNotExist:
+        return Response({'error': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # Permission API
 
@@ -205,7 +205,7 @@ def update_permission(request, pk):
 def partial_update_permission(request, pk):
     try:
         permission = Permission.objects.get(pk=pk)
-    except Role.DoesNotExist:
+    except Group.DoesNotExist:
         return Response({"error": "Permission not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PATCH':
@@ -228,17 +228,17 @@ def delete_permission(request, pk):
 
 @swagger_auto_schema(method='post', request_body=PermissionSerializer, responses={201: PermissionSerializer}, tags=['Permission'])
 @api_view(['POST'])
-def assign_permission_to_role(request):
-    role_id = request.data.get('role_id')
+def assign_permission_to_group(request):
+    id = request.data.get('id')
     permission_id = request.data.get('permission_id')
 
     try:
-        role = Role.objects.get(pk=role_id)
+        group = Group.objects.get(pk=id)
         permission = Permission.objects.get(pk=permission_id)
-        role.permission.add(permission)
-        return Response({'message': 'Permission assigned to role successfully'}, status=status.HTTP_200_OK)
-    except Role.DoesNotExist:
-        return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
+        group.permission.add(permission)
+        return Response({'message': 'Permission assigned to group successfully'}, status=status.HTTP_200_OK)
+    except Group.DoesNotExist:
+        return Response({'error': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
     except Permission.DoesNotExist:
         return Response({'error': 'Permission not found'}, status=status.HTTP_404_NOT_FOUND)
 

@@ -4,3 +4,4 @@ from authApp.serializers.permissionSerializer import PermissionSerializer
 from authApp.serializers.backupEmailSerializer import BackupEmailSerializer
 from authApp.serializers.phoneSerializer import PhoneSerializer
 from authApp.serializers.ubicationSerializer import UbicationSerializer
+from authApp.serializers.groupSerializer import GroupSerializer

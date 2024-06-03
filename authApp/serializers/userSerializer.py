@@ -1,7 +1,12 @@
 from rest_framework import serializers
 from authApp.models.user import User
+from authApp.serializers.groupSerializer import GroupSerializer
+from authApp.serializers.permissionSerializer import PermissionSerializer
 
 class UserSerializer(serializers.ModelSerializer):
+    groups = GroupSerializer(many=True)
+    user_permissions = PermissionSerializer(many=True)
+
     class Meta:
         model = User
         fields = [
@@ -20,6 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
             'backupEmail',
             'phone',
             'ubication',
+            'groups',
+            'user_permissions',
         ]
 
         read_only_fields = [

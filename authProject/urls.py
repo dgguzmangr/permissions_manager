@@ -50,13 +50,13 @@ urlpatterns = [
     path('partial-update-user/<int:pk>/', appView.partial_update_user, name='Update a selected attribute for a user'),
     path('delete-user/<int:pk>/', appView.delete_user, name='Delete a selected user'),
 
-    # Role API
-    path('show-roles/', appView.show_roles, name='List all created roles'),
-    path('create-role/', appView.create_role, name='Create a new role'),
-    path('update-role/<int:pk>/', appView.update_role, name='Update a selected role'),
-    path('partial-update-role/<int:pk>/', appView.partial_update_role, name='Update a selected attribute for a role'),
-    path('delete-role/<int:pk>/', appView.delete_role, name='Delete a selected role'),
-    path('assign-role-to-user/', appView.assign_role_to_user, name='Assign role to user'),
+    # Group API
+    path('show-groups/', appView.show_groups, name='List all created groups'),
+    path('create-group/', appView.create_group, name='Create a new role'),
+    path('update-group/<int:pk>/', appView.update_group, name='Update a selected group'),
+    path('partial-update-group/<int:pk>/', appView.partial_update_group, name='Update a selected attribute for a group'),
+    path('delete-group/<int:pk>/', appView.delete_group, name='Delete a selected group'),
+    path('assign-group-to-user/', appView.assign_group_to_user, name='Assign group to user'),
 
     # Permission API
     path('show-permissions/', appView.show_permissions, name='List all created permits'),
@@ -64,7 +64,7 @@ urlpatterns = [
     path('update-permission/<int:pk>/', appView.update_permission, name='Update a selected permit'),
     path('partial-update-permission/<int:pk>/', appView.partial_update_permission, name='Update a selected attribute for a permission'),
     path('delete-permission/<int:pk>/', appView.delete_permission, name='Delete a selected permit'),
-    path('assign-permission-to-role/', appView.assign_permission_to_role, name='Assign permission to role'),
+    path('assign-permission-to-group/', appView.assign_permission_to_group, name='Assign permission to group'),
 
     # BackupEmail API
     path('show-backup-email/', appView.show_backupEmail, name='List all created backup emails'),
