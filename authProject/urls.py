@@ -60,10 +60,6 @@ urlpatterns = [
 
     # Permission API
     path('show-permissions/', appView.show_permissions, name='List all created permits'),
-    path('create-permissions/', appView.create_permission, name='Create a new permit'),
-    path('update-permission/<int:pk>/', appView.update_permission, name='Update a selected permit'),
-    path('partial-update-permission/<int:pk>/', appView.partial_update_permission, name='Update a selected attribute for a permission'),
-    path('delete-permission/<int:pk>/', appView.delete_permission, name='Delete a selected permit'),
     path('assign-permission-to-group/', appView.assign_permission_to_group, name='Assign permission to group'),
 
     # BackupEmail API

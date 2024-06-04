@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.hashers import make_password, check_password
-from .role import Role
+from django.contrib.auth.models import  Group
 from .backupEmail import BackupEmail
 from .phone import Phone
 from .ubication import Ubication
@@ -44,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('Username', max_length=100, blank=False, null=False, unique=True)
     password = models.CharField('Password', max_length=128, blank=False, null=False)
     status = models.BooleanField('Status', default=False, blank=False, null=False)
-    role = models.ManyToManyField(Role, related_name='user')
+    user_groups = models.ManyToManyField(Group, related_name='users')
     backupEmail = models.ForeignKey(BackupEmail, null=True, blank=True, on_delete=models.SET_NULL)
     phone = models.ForeignKey(Phone, null=True, blank=True, on_delete=models.SET_NULL)
     ubication = models.ForeignKey(Ubication, null=True, blank=True, on_delete=models.SET_NULL)
