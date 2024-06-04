@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from authApp.serializers import UserSerializer, PermissionSerializer, RoleSerializer, BackupEmailSerializer, PhoneSerializer, UbicationSerializer
+from authApp.serializers import UserSerializer, PermissionSerializer, BackupEmailSerializer, PhoneSerializer, UbicationSerializer
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
 from django.contrib.auth import login as auth_login # comentar par deshabilitar seguridad
@@ -12,7 +12,6 @@ from drf_yasg import openapi
     type=openapi.TYPE_OBJECT,
     properties={
         'user': openapi.Schema(type=openapi.TYPE_OBJECT),
-        'role': openapi.Schema(type=openapi.TYPE_OBJECT),
         'permission': openapi.Schema(type=openapi.TYPE_OBJECT),
         'backupEmail': openapi.Schema(type=openapi.TYPE_OBJECT),
         'phone': openapi.Schema(type=openapi.TYPE_OBJECT),
@@ -23,14 +22,12 @@ from drf_yasg import openapi
 def permissions_field_structure_view(request):
     userSerializer = UserSerializer()
     permissionSerializer = PermissionSerializer()
-    roleSerializer = RoleSerializer()
     backupEmailSerializer = BackupEmailSerializer()
     phoneSerializer = PhoneSerializer()
     ubicationSerializer = UbicationSerializer()
 
     user_fields = get_serializer_fields_info(userSerializer)
     permission_fields = get_serializer_fields_info(permissionSerializer)
-    role_fields = get_serializer_fields_info(roleSerializer)
     backupEmail_fields = get_serializer_fields_info(backupEmailSerializer)
     phone_fields = get_serializer_fields_info(phoneSerializer)
     ubication_fields = get_serializer_fields_info(ubicationSerializer)
@@ -38,7 +35,6 @@ def permissions_field_structure_view(request):
     field_structure = {
         'user': user_fields,
         'permission': permission_fields,
-        'role': role_fields,
         'backupEmail': backupEmail_fields,
         'phone': phone_fields,
         'ubication': ubication_fields,
