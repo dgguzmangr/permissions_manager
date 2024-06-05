@@ -43,7 +43,7 @@ warehouse_schema = openapi.Schema(
         openapi.Parameter(
             'Authorization',
             openapi.IN_HEADER,
-            description="Token de autorización",
+            description="Authorization token",
             type=openapi.TYPE_STRING
         )
     ]
@@ -114,7 +114,7 @@ def create_warehouse(request):
         openapi.Parameter(
             'Authorization',
             openapi.IN_HEADER,
-            description="Token de autorización",
+            description="Authorization token",
             type=openapi.TYPE_STRING
         )
     ]
@@ -168,7 +168,7 @@ def update_warehouse(request, pk):
         openapi.Parameter(
             'Authorization',
             openapi.IN_HEADER,
-            description="Token de autorización",
+            description="Authorization token",
             type=openapi.TYPE_STRING
         )
     ]
@@ -216,7 +216,7 @@ def partial_update_warehouse(request, pk):
         openapi.Parameter(
             'Authorization',
             openapi.IN_HEADER,
-            description="Token de autorización",
+            description="Authorization token",
             type=openapi.TYPE_STRING
         )
     ]
@@ -253,7 +253,7 @@ def delete_warehouse(request, pk):
         openapi.Parameter(
             'Authorization',
             openapi.IN_HEADER,
-            description="Token de autorización",
+            description="Authorization token",
             type=openapi.TYPE_STRING
         )
     ]
@@ -308,7 +308,7 @@ location_schema = openapi.Schema(
         openapi.Parameter(
             'Authorization',
             openapi.IN_HEADER,
-            description="Token de autorización",
+            description="Authorization token",
             type=openapi.TYPE_STRING
         )
     ]
@@ -339,8 +339,7 @@ def show_locations(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-@swagger_auto_schema(method='post', request_body=warehouse_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Location'])
+@swagger_auto_schema(method='post', request_body=location_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Location'])
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -366,53 +365,42 @@ def create_location(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-@swagger_auto_schema(method='post', request_body=location_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Location'])
-@api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
-@permission_required('authApp.create_locations', raise_exception=True)
-def create_location(request):
-    try:
-        url = f"{config('url_warehouse_manager')}/create-location/"
-        payload = request.data
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, json=payload, headers=headers)
-        
-        if response.status_code == 201:
-            return Response(response.json(), status=status.HTTP_201_CREATED)
-        elif response.status_code == 400:
-            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error": "Error creating location"}, status=response.status_code)
-    except requests.exceptions.RequestException as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-"""
-@swagger_auto_schema(method='put', request_body=location_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Location'])
+@swagger_auto_schema(
+    method='put',
+    request_body=location_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Location'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.update_locations', raise_exception=True)
 def update_location(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/update-location/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_warehouse_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -422,20 +410,51 @@ def update_location(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating location"}, status=response.status_code)
+            return Response({
+                "error": "Error updating location",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=location_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Location'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=location_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Location'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_locations', raise_exception=True)
 def partial_update_location(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/partial-update-location/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_warehouse_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -449,15 +468,38 @@ def partial_update_location(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Location'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Location'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_locations', raise_exception=True)
 def delete_location(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/delete-location/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {'Authorization': f'Token {service_user_warehouse_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -467,6 +509,7 @@ def delete_location(request, pk):
             return Response({"error": "Error deleting location"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # Building API
 building_schema = openapi.Schema(
@@ -479,32 +522,59 @@ building_schema = openapi.Schema(
     required=['name', 'location']
 )
 
-@swagger_auto_schema(method='get', tags=['Building'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Building'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_buildings', raise_exception=True)
 def show_buildings(request):
     try:
         url = f"{config('url_warehouse_manager')}/show-buildings/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {'Authorization': f'Token {service_user_warehouse_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting locations"}, status=response.status_code)
+            return Response({
+                "error": "Error getting buildings",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @swagger_auto_schema(method='post', request_body=building_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Building'])
 @api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.create_buildings', raise_exception=True)
 def create_building(request):
     try:
         url = f"{config('url_warehouse_manager')}/create-building/"
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {service_user_warehouse_token}'
+        }
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code == 201:
@@ -516,16 +586,43 @@ def create_building(request):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=building_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Building'])
+
+@swagger_auto_schema(
+    method='put',
+    request_body=building_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Building'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.update_buildings', raise_exception=True)
 def update_building(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/update-building/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_warehouse_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -535,20 +632,51 @@ def update_building(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating building"}, status=response.status_code)
+            return Response({
+                "error": "Error updating building",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=building_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Building'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=building_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Building'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_buildings', raise_exception=True)
 def partial_update_building(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/partial-update-building/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_warehouse_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -562,24 +690,53 @@ def partial_update_building(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Building'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Building'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_buildings', raise_exception=True)
 def delete_building(request, pk):
     try:
         url = f"{config('url_warehouse_manager')}/delete-building/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {'Authorization': f'Token {service_user_warehouse_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error deleting building"}, status=response.status_code)
+            return Response({"error": "Error deleting location"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
 
 # Footprint API
 footprint_schema = openapi.Schema(
