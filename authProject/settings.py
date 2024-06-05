@@ -27,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('secret_key')
+SERVICE_USER_WAREHOUSE_TOKEN = config('SERVICE_USER_WAREHOUSE_TOKEN')
 URL_WAREHOUSE_MANAGER = config('url_warehouse_manager')
 URL_PRODUCT_MANAGER = config('url_product_manager')
 
