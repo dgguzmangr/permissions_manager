@@ -75,7 +75,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-        # Asignar grupos
         groups = []
         for group_data in groups_data:
             group, created = Group.objects.get_or_create(name=group_data['name'])
@@ -93,7 +92,6 @@ class UserSerializer(serializers.ModelSerializer):
             permissions.append(permission)
         user.user_permissions.set(permissions)
 
-        # Asignar user_groups
         user.user_groups.set(user_groups_data)
 
         return user

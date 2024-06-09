@@ -50,6 +50,7 @@ urlpatterns = [
     path('update-user/<int:pk>/', appView.update_user, name='Update a selected user'),
     path('partial-update-user/<int:pk>/', appView.partial_update_user, name='Update a selected attribute for a user'),
     path('delete-user/<int:pk>/', appView.delete_user, name='Delete a selected user'),
+    path('users/<int:user_id>/products/', appView.get_user_products, name='get_user_products'),
 
     # Group API
     path('show-groups/', appView.show_groups, name='List all created groups'),

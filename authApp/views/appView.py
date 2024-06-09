@@ -132,6 +132,36 @@ def delete_user(request, pk):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@swagger_auto_schema(
+    method='get',
+    manual_parameters=[
+        openapi.Parameter('user_id', openapi.IN_PATH, description="User id", type=openapi.TYPE_INTEGER)
+    ],
+    responses={200: "Product list"},
+    tags=['User']
+)
+@api_view(['GET'])
+@permission_classes([])  # Ajustar según sea necesario
+@authentication_classes([])  # Ajustar según sea necesario
+def get_user_products(request, user_id):
+    try:
+        user = User.objects.get(user_id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    product_ids = user.product_ids
+    product_manager_url = config('url_product_manager')
+    
+    try:
+        response = requests.get(f"{product_manager_url}/show-products/", params={'ids': ','.join(map(str, product_ids))})
+        response.raise_for_status()
+        products = response.json()
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    return Response(products, status=status.HTTP_200_OK)
+
+
 # Group API
 
 @swagger_auto_schema(method='get', responses={200: GroupSerializer(many=True)}, tags=['Group'])
