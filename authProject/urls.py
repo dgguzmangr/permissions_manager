@@ -156,6 +156,7 @@ urlpatterns = [
     path('show-product-footprint/<int:pk>/', apiGatewayView.show_product_footprint, name='List footprint per products'),
     path('show-product-prices/<int:pk>/', apiGatewayView.show_product_prices, name='List all prices per products'),
     path('show-product-taxes/<int:pk>/', apiGatewayView.show_product_taxes, name='List all taxes per products'),
+    path('product-detail/<int:pk>/', apiGatewayView.show_product_detail, name='Get product details'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

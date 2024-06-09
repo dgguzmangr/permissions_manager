@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import  Group
 from .backupEmail import BackupEmail
 from .phone import Phone
@@ -51,6 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
+    product_ids = ArrayField(models.IntegerField(), blank=True, default=list)
 
     objects = UserManager()
 
@@ -113,6 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("authApp.show_product_footprints", "Can view footprints filtered by products",),
             ("authApp.show_product_prices", "Can view prices filtered by products",),
             ("authApp.show_product_taxes", "Can view taxes filtered by products",),
+            ("authApp.show_product_details", "Get product details",),
             # Field structure view API Gateway
             ("authApp.products_field_structure_view", "Gets the field structure of the products backend",),
             ("authApp.warehouse_field_structure_view", "Gets the field structure of the warehouse backend",),

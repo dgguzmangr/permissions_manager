@@ -733,11 +733,6 @@ def delete_building(request, pk):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-
-
-
-
 # Footprint API
 footprint_schema = openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -760,32 +755,59 @@ footprint_schema = openapi.Schema(
     required=['measurement_unit', 'long', 'high', 'width', 'weight']
 )
 
-@swagger_auto_schema(method='get', tags=['Footprint'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Footprint'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_footprints', raise_exception=True)
 def show_footprints(request):
     try:
         url = f"{config('url_product_manager')}/show-footprints/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting footprints"}, status=response.status_code)
+            return Response({
+                "error": "Error getting footprint",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @swagger_auto_schema(method='post', request_body=footprint_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Footprint'])
 @api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.create_footprints', raise_exception=True)
 def create_footprint(request):
     try:
         url = f"{config('url_product_manager')}/create-footprint/"
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {service_user_product_token}'
+        }
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code == 201:
@@ -797,16 +819,43 @@ def create_footprint(request):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=footprint_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Footprint'])
+
+@swagger_auto_schema(
+    method='put',
+    request_body=footprint_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Footprint'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.update_footprints', raise_exception=True)
 def update_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-footprint/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -816,20 +865,51 @@ def update_footprint(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating footprint"}, status=response.status_code)
+            return Response({
+                "error": "Error updating footprint",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=footprint_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Footprint'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=footprint_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Footprint'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_footprints', raise_exception=True)
 def partial_update_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-footprint/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -843,15 +923,38 @@ def partial_update_footprint(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Footprint'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Footprint'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_footprints', raise_exception=True)
 def delete_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-footprint/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -861,6 +964,7 @@ def delete_footprint(request, pk):
             return Response({"error": "Error deleting footprint"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # Discount API
 discount_schema = openapi.Schema(
@@ -874,32 +978,59 @@ discount_schema = openapi.Schema(
     required=['amount', 'status']
 )
 
-@swagger_auto_schema(method='get', tags=['Discount'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Discount'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_discounts', raise_exception=True)
 def show_discounts(request):
     try:
         url = f"{config('url_product_manager')}/show-discounts/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting discounts"}, status=response.status_code)
+            return Response({
+                "error": "Error getting discount",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @swagger_auto_schema(method='post', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Discount'])
 @api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.create_discounts', raise_exception=True)
 def create_discount(request):
     try:
         url = f"{config('url_product_manager')}/create-discount/"
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {service_user_product_token}'
+        }
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code == 201:
@@ -911,16 +1042,43 @@ def create_discount(request):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+
+@swagger_auto_schema(
+    method='put',
+    request_body=discount_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Discount'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.update_discounts', raise_exception=True)
 def update_discount(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-discount/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -930,20 +1088,51 @@ def update_discount(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating discount"}, status=response.status_code)
+            return Response({
+                "error": "Error updating discount",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=discount_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=discount_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Discount'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_discounts', raise_exception=True)
 def partial_update_discount(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-discount/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -957,15 +1146,38 @@ def partial_update_discount(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Discount'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Discount'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_discounts', raise_exception=True)
 def delete_discount(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-discount/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -975,6 +1187,7 @@ def delete_discount(request, pk):
             return Response({"error": "Error deleting discount"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # Price API
 price_schema = openapi.Schema(
@@ -996,32 +1209,59 @@ price_schema = openapi.Schema(
     required=['amount', 'status']
 )
 
-@swagger_auto_schema(method='get', tags=['Price'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Price'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_prices', raise_exception=True)
 def show_prices(request):
     try:
         url = f"{config('url_product_manager')}/show-prices/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting prices"}, status=response.status_code)
+            return Response({
+                "error": "Error getting prices",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @swagger_auto_schema(method='post', request_body=price_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Price'])
 @api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.create_prices', raise_exception=True)
 def create_price(request):
     try:
         url = f"{config('url_product_manager')}/create-price/"
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {service_user_product_token}'
+        }
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code == 201:
@@ -1033,16 +1273,43 @@ def create_price(request):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=price_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Price'])
+
+@swagger_auto_schema(
+    method='put',
+    request_body=price_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Price'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
-@permission_required('authApp.update_prices', raise_exception=True)
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_required('authApp.update_price', raise_exception=True)
 def update_price(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-price/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -1052,20 +1319,51 @@ def update_price(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating price"}, status=response.status_code)
+            return Response({
+                "error": "Error updating price",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=price_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Price'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=price_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Price'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_prices', raise_exception=True)
 def partial_update_price(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-price/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -1079,15 +1377,38 @@ def partial_update_price(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Price'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Price'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_prices', raise_exception=True)
 def delete_price(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-price/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1097,6 +1418,7 @@ def delete_price(request, pk):
             return Response({"error": "Error deleting price"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # Tax API
 tax_schema = openapi.Schema(
@@ -1127,32 +1449,59 @@ tax_schema = openapi.Schema(
     required=['name', 'percentage', 'status']
 )
 
-@swagger_auto_schema(method='get', tags=['Tax'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Tax'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_taxes', raise_exception=True)
 def show_taxes(request):
     try:
         url = f"{config('url_product_manager')}/show-taxes/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting taxes"}, status=response.status_code)
+            return Response({
+                "error": "Error getting taxes",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @swagger_auto_schema(method='post', request_body=tax_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Tax'])
 @api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.create_taxes', raise_exception=True)
 def create_tax(request):
     try:
         url = f"{config('url_product_manager')}/create-tax/"
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {service_user_product_token}'
+        }
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code == 201:
@@ -1164,16 +1513,43 @@ def create_tax(request):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=tax_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Tax'])
+
+@swagger_auto_schema(
+    method='put',
+    request_body=tax_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Tax'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
-@permission_required('authApp.update_taxes', raise_exception=True)
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_required('authApp.update_tax', raise_exception=True)
 def update_tax(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-tax/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -1183,20 +1559,51 @@ def update_tax(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating tax"}, status=response.status_code)
+            return Response({
+                "error": "Error updating tax",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=tax_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Tax'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=tax_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Tax'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_taxes', raise_exception=True)
 def partial_update_tax(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-tax/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -1210,15 +1617,38 @@ def partial_update_tax(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Tax'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Tax'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_taxes', raise_exception=True)
 def delete_tax(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-tax/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1228,6 +1658,7 @@ def delete_tax(request, pk):
             return Response({"error": "Error deleting tax"}, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # Product API
 product_schema = openapi.Schema(
@@ -1278,32 +1709,59 @@ product_schema = openapi.Schema(
     required=['name', 'short_description', 'long_description', 'footprint', 'price', 'discount', 'tax']
 )
 
-@swagger_auto_schema(method='get', tags=['Product'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_products', raise_exception=True)
 def show_products(request):
     try:
         url = f"{config('url_product_manager')}/show-products/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting products"}, status=response.status_code)
+            return Response({
+                "error": "Error getting products",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @swagger_auto_schema(method='post', request_body=product_schema, responses={200: 'OK', 400: 'Bad Request', 500: 'Internal Server Error'}, tags=['Product'])
 @api_view(['POST'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.create_products', raise_exception=True)
 def create_product(request):
     try:
         url = f"{config('url_product_manager')}/create-product/"
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {service_user_product_token}'
+        }
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code == 201:
@@ -1315,16 +1773,43 @@ def create_product(request):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='put', request_body=product_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Product'])
+
+@swagger_auto_schema(
+    method='put',
+    request_body=product_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PUT'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.update_products', raise_exception=True)
 def update_product(request, pk):
     try:
         url = f"{config('url_product_manager')}/update-product/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         response = requests.put(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -1334,20 +1819,51 @@ def update_product(request, pk):
         elif response.status_code == 404:
             return Response(response.json(), status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Error updating product"}, status=response.status_code)
+            return Response({
+                "error": "Error updating product",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='patch', request_body=product_schema, responses={200: 'OK', 400: 'Bad Request', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Product'])
+
+@swagger_auto_schema(
+    method='patch',
+    request_body=product_schema,
+    responses={
+        200: 'OK',
+        400: 'Bad Request',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['PATCH'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.partial_update_products', raise_exception=True)
 def partial_update_product(request, pk):
     try:
         url = f"{config('url_product_manager')}/partial-update-product/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {
+            'Authorization': f'Token {service_user_product_token}',
+            'Content-Type': 'application/json'
+        }
         payload = request.data
-        headers = {'Content-Type': 'application/json'}
         response = requests.patch(url, json=payload, headers=headers)
         
         if response.status_code == 200:
@@ -1361,15 +1877,38 @@ def partial_update_product(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='delete', responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'}, tags=['Product'])
+
+@swagger_auto_schema(
+    method='delete',
+    responses={
+        204: 'No Content',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    },
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['DELETE'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.delete_products', raise_exception=True)
 def delete_product(request, pk):
     try:
         url = f"{config('url_product_manager')}/delete-product/{pk}/"
-        response = requests.delete(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.delete(url, headers=headers)
         
         if response.status_code == 204:
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1380,99 +1919,270 @@ def delete_product(request, pk):
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='get', tags=['Product'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_product_discounts', raise_exception=True)
 def show_product_discounts(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-discounts/{pk}/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting product discounts"}, status=response.status_code)
+            return Response({
+                "error": "Error getting discounts from product",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='get', tags=['Product'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_product_footprints', raise_exception=True)
 def show_product_footprint(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-footprint/{pk}/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting product footprint"}, status=response.status_code)
+            return Response({
+                "error": "Error getting footprint from product",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='get', tags=['Product'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_product_prices', raise_exception=True)
 def show_product_prices(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-prices/{pk}/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting product prices"}, status=response.status_code)
+            return Response({
+                "error": "Error getting prices from product",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='get', tags=['Product'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.show_product_taxes', raise_exception=True)
 def show_product_taxes(request, pk):
     try:
         url = f"{config('url_product_manager')}/show-product-taxes/{pk}/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting product taxes"}, status=response.status_code)
+            return Response({
+                "error": "Error getting taxes from product",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# Field structure view API
-@swagger_auto_schema(method='get', tags=['Field structure view'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Product'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_required('authApp.show_product_details', raise_exception=True)
+def show_product_detail(request, pk):
+    try:
+        url = f"{config('url_product_manager')}/product-detail/{pk}/"
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "error": "Error getting details from product",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Field structure view'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 @permission_required('authApp.products_field_structure_view', raise_exception=True)
 def products_field_structure_view(request):
     try:
         url = f"{config('url_product_manager')}/products-manager-field-structure/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_product_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_product_token = config('SERVICE_USER_PRODUCT_TOKEN')
+        headers = {'Authorization': f'Token {service_user_product_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting products manager field structure"}, status=response.status_code)
+            return Response({
+                "error": "Error getting product field structure view",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@swagger_auto_schema(method='get', tags=['Field structure view'])
+
+@swagger_auto_schema(
+    method='get',
+    tags=['Field structure view'],
+    manual_parameters=[
+        openapi.Parameter(
+            'Authorization',
+            openapi.IN_HEADER,
+            description="Authorization token",
+            type=openapi.TYPE_STRING
+        )
+    ]
+)
 @api_view(['GET'])
-@permission_classes([])  # Ajustar según sea necesario
-@authentication_classes([])  # Ajustar según sea necesario
-@permission_required('authApp.warehouse_field_structure_view', raise_exception=True)
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_required('authApp.warehouse¡_field_structure_view', raise_exception=True)
 def warehouses_field_structure_view(request):
     try:
         url = f"{config('url_warehouse_manager')}/warehouse-manager-field-structure/"
-        response = requests.get(url)
+    except UndefinedValueError:
+        return Response({"error": "url_warehouse_manager not found. Declare it as envvar or define a default value."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        service_user_warehouse_token = config('SERVICE_USER_WAREHOUSE_TOKEN')
+        headers = {'Authorization': f'Token {service_user_warehouse_token}'}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Error getting warehouses manager field structure"}, status=response.status_code)
+            return Response({
+                "error": "Error getting warehouses manager field structure",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }, status=response.status_code)
     except requests.exceptions.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

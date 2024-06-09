@@ -4,7 +4,9 @@ from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.decorators import permission_required
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.decorators import permission_classes
-
+from decouple import config, UndefinedValueError
+from django.conf import settings
+import requests
 from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
@@ -39,7 +41,7 @@ def show_users(request):
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+"""
 @swagger_auto_schema(method='post', request_body=UserSerializer, responses={201: UserSerializer}, tags=['User'])
 @api_view(['POST'])
 @permission_classes([])  # Ajustar según sea necesario
@@ -51,6 +53,35 @@ def create_user(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""
+
+@swagger_auto_schema(method='post', request_body=UserSerializer, responses={201: UserSerializer}, tags=['User'])
+@api_view(['POST'])
+@permission_classes([])  # Comentar o modificar según sea necesario para producción
+@authentication_classes([])  # Comentar o modificar según sea necesario para producción
+def create_user(request):
+    if request.method == 'POST':
+        serializer = User(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            user = serializer.data
+            
+            # Actualizar el user en el microservicio de usuarios
+            product_id = user['product_id']
+            user_id = user['id']
+            product_update_url = f"{config('url_product_manager')}/show-products/"
+            requests.post(product_update_url, json={'user_id': user_id})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
 
 @swagger_auto_schema(method='put', request_body=UserSerializer, responses={200: UserSerializer}, tags=['User'])
 @api_view(['PUT'])

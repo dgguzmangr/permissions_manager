@@ -1,8 +1,11 @@
+from decouple import config
+import requests
 from rest_framework import serializers
 from django.contrib.auth.models import Group, Permission
 from authApp.models.user import User
 from authApp.serializers.groupSerializer import GroupSerializer
 from authApp.serializers.permissionSerializer import PermissionSerializer
+from rest_framework.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True)
@@ -28,6 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
             'ubication',
             'groups',
             'user_permissions',
+            'product_ids',
         ]
 
         read_only_fields = [
@@ -51,6 +55,16 @@ class UserSerializer(serializers.ModelSerializer):
         if len(data.get('password', '')) > 128:
             raise serializers.ValidationError("The 'password' field cannot exceed 128 characters.")
         return data
+
+    def validate_product_ids(self, value):
+        product_ids = value
+        product_update_url = f"{config('url_product_manager')}/show-products/"
+        response = requests.get(product_update_url)
+        existing_product_ids = [product['product_id'] for product in response.json()]
+        non_existing_ids = [product_id for product_id in product_ids if product_id not in existing_product_ids]
+        if non_existing_ids:
+            raise ValidationError(f"The following product IDs do not exist: {non_existing_ids}")
+        return value
 
     def create(self, validated_data):
         groups_data = validated_data.pop('groups', [])
