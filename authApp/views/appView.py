@@ -28,7 +28,8 @@ from authApp.serializers.ubicationSerializer import UbicationSerializer
 
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
-from django.contrib.auth import login as auth_login # comentar par deshabilitar seguridad
+from django.contrib.auth import authenticate, login as auth_login # comentar par deshabilitar seguridad
+
 
 # User API
 
@@ -546,10 +547,24 @@ def delete_ubication(request, pk):
 @authentication_classes([])  # Comentar o modificar según sea necesario para producción
 def login(request):
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.data)
-        if form.is_valid():
-            user = form.get_user()
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
             auth_login(request, user)
             token, _ = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key}, status=status.HTTP_200_OK)
+
+            # Obtener permisos del usuario
+            user_permissions = user.user_permissions.all()
+            group_permissions = Permission.objects.filter(group__user=user)
+
+            # Combinar permisos de usuario y grupos
+            all_permissions = user_permissions | group_permissions
+            permissions = all_permissions.values_list('codename', flat=True).distinct()
+
+            return Response({
+                "token": token.key,
+                "permissions": list(permissions)
+            }, status=status.HTTP_200_OK)
         return Response({"error": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)

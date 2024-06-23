@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("authApp.partial_update_warehouses", "Can update partially warehouses",),
             ("authApp.delete_warehouses", "Can delete warehouses",),
             ("authApp.show_warehouse_buildings", "Can view buildings filtered by warehouses",),
-            # Warehouses API Gateway
+            # Locations API Gateway
             ("authApp.show_locations", "Can view locations",),
             ("authApp.create_locations", "Can create locations",),
             ("authApp.update_locations", "Can update locations",),
