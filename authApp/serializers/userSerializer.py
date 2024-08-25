@@ -39,6 +39,10 @@ class UserSerializer(serializers.ModelSerializer):
             'username'
         ]
 
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
     def validate(self, data):
         if len(data.get('company_name', '')) > 100:
             raise serializers.ValidationError("The 'company_name' field cannot exceed 100 characters.")

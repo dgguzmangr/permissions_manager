@@ -29,6 +29,7 @@ from authApp.serializers.ubicationSerializer import UbicationSerializer
 from rest_framework.authtoken.models import Token # comentar par deshabilitar seguridad
 from django.contrib.auth.forms import AuthenticationForm # comentar par deshabilitar seguridad
 from django.contrib.auth import authenticate, login as auth_login # comentar par deshabilitar seguridad
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # User API
@@ -62,17 +63,32 @@ def create_user(request):
 @authentication_classes([])  # Comentar o modificar según sea necesario para producción
 def create_user(request):
     if request.method == 'POST':
-        serializer = User(data=request.data)
+        serializer = UserSerializer(data=request.data)  # Utiliza UserSerializer en lugar de User
         if serializer.is_valid():
-            serializer.save()
-            user = serializer.data
+            user = serializer.save()
             
-            # Actualizar el user en el microservicio de usuarios
-            product_id = user['product_id']
-            user_id = user['id']
+            # Genera el token JWT aquí
+            refresh = RefreshToken.for_user(user)
+            token = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            
+            # Obtén los permisos del usuario aquí
+            permissions = list(user.user_permissions.values_list('codename', flat=True))
+            
+            # Actualizar el user en el microservicio de productos
+            product_ids = serializer.validated_data.get('product_ids', [])
+            user_id = user.id
             product_update_url = f"{config('url_product_manager')}/show-products/"
-            requests.post(product_update_url, json={'user_id': user_id})
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            requests.post(product_update_url, json={'user_id': user_id, 'product_ids': product_ids})
+
+            response_data = {
+                "token": token,
+                "permissions": permissions,
+                "user": UserSerializer(user).data
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

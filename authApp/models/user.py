@@ -28,6 +28,7 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     TYPES = [
         ('Jurídica', 'Jurídica'),
@@ -35,17 +36,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
 
     user_id = models.AutoField(primary_key=True)
-    type = models.CharField('Type', max_length=20, choices=TYPES, blank=False, null=False)
-    company_name = models.CharField('Company name', max_length=100, blank=False, null=False)
-    name = models.CharField('Name', max_length=100, blank=False, null=False)
-    last_name = models.CharField('Last name', max_length=100, blank=False, null=False)
-    document = models.CharField('Document', max_length=15, blank=False, null=False)
-    nit = models.CharField('NIT', max_length=18, blank=False, null=False)
+    type = models.CharField('Type', max_length=20, choices=TYPES, blank=True, null=True)
+    company_name = models.CharField('Company name', max_length=100, blank=True, null=True)
+    name = models.CharField('Name', max_length=100, blank=True, null=True)
+    last_name = models.CharField('Last name', max_length=100, blank=True, null=True)
+    document = models.CharField('Document', max_length=15, blank=True, null=True)
+    nit = models.CharField('NIT', max_length=18, blank=True, null=True)
     email = models.EmailField('Email', max_length=100, blank=False, null=False, unique=True)
     username = models.CharField('Username', max_length=100, blank=False, null=False, unique=True)
     password = models.CharField('Password', max_length=128, blank=False, null=False)
-    status = models.BooleanField('Status', default=False, blank=False, null=False)
-    user_groups = models.ManyToManyField(Group, related_name='users')
+    status = models.BooleanField('Status', default=False, blank=True, null=True)
+    user_groups = models.ManyToManyField(Group, related_name='users', blank=True)
     backupEmail = models.ForeignKey(BackupEmail, null=True, blank=True, on_delete=models.SET_NULL)
     phone = models.ForeignKey(Phone, null=True, blank=True, on_delete=models.SET_NULL)
     ubication = models.ForeignKey(Ubication, null=True, blank=True, on_delete=models.SET_NULL)
@@ -57,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
 
     class Meta:
         app_label = 'authApp'
