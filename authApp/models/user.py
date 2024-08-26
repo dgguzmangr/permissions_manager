@@ -63,6 +63,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         app_label = 'authApp'
         permissions = [
+            # Users API
+            ("authApp.show_users", "Can view users",),
+            ("authApp.create_users", "Can create users",),
+            ("authApp.update_users", "Can update users",),
+            ("authApp.partial_update_users", "Can update partially users",),
+            ("authApp.delete_users", "Can delete users",),
             # Warehouses API Gateway
             ("authApp.show_warehouses", "Can view warehouses",),
             ("authApp.create_warehouses", "Can create warehouses",),
